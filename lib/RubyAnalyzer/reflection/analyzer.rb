@@ -5,9 +5,12 @@ module RubyAnalyzer
   class Analyzer
     def initialize( target_classname_fname, exclude_classname_fname, exclude_constname_fname, fname , fname2=nil )
       @current = nil
-      @target_class_list = Util.remove_empty_line( File.readlines( target_classname_fname ) )
-      @exclude_class_list = Util.remove_empty_line( File.readlines( exclude_classname_fname ) ).map{ |x| x.to_sym }
-      @exclude_const_list = Util.remove_empty_line( File.readlines( exclude_constname_fname ) ).map{ |x| x.to_sym }
+			fnames = [target_classname_fname, exclude_classname_fname, exclude_constname_fname]
+      @target_class_list , @exclude_class_list ,  @exclude_const_list = fnames.map{ |fname|
+				list = File.readlines( fname )
+				list2 = list.map{ |l| l.split('#').first }
+				Util.remove_empty_line( list2 ).map{ |x| x.to_sym }
+			}
 
 			@init_consts = Module.constants
       @init_gv = global_variables
@@ -24,9 +27,133 @@ module RubyAnalyzer
       @diff_gv = @now_gv - @init_gv
       @diff_lv = @now_lv - @init_lv
 
-      item = Item.new( Object , nil , 0 )
-      show0( 0, item , @diff_const )
+			@defined_class_list = []
+			@defined_exclude_class_list = []
+			@defined_exclude_const_list = []
+			@defined_unknown_list = []
+			@defined_not_respond_to_list = []
+#      item = Item.new( Object , nil , 0 )
+#      show0( 0, item , @diff_const )
     end
+
+		def analyze0
+			level = 0
+      item = Item.new( Object , nil , 0 )
+      @diff_const.each do |x|
+				if item.respond_to?(:const_get)
+					obj = item.obj.const_get( x )
+					# analyze_sub(obj , x, item, level)
+					case obj.class
+					when Class
+						if @target_class_list.include?( x )
+							unless @exclude_class_list.include?( x )
+								item = Item.new( obj , item , level )
+								@defined_class_list << x
+							else
+								# p "show0 found but excluded #{obj.to_s} in @target_class_list "
+								@defined_exclude_class_list << x
+							end
+						else
+							unless @exclude_class_list.include?( x )
+								unless @exclude_const_list.include?( x )
+									puts "unknow x=#{x}"
+									@defined_unknown_list << x
+								else
+									@defined_exclude_const_list << x
+								end
+							else
+								@defined_exclude_class_list << x
+							end
+						end
+					else
+						p "0 ELSE"
+						#
+					end
+		
+				else
+					@defined_not_respond_to_list << x
+				end
+			end
+			print_lists
+		end
+
+		def print_lists
+			#				obj = Object.const_get( x ) 
+			p "@defined_class_list="
+			p @defined_class_list.size
+			@defined_class_list.map{|x| puts "  #{x}" }
+			p "@defined_exclude_class_list ="
+			p @defined_exclude_class_list.size
+			@defined_exclude_class_list.map{|x| puts "  #{x}" }
+			p "@defined_exclude_const_list="
+			p @defined_exclude_const_list.size
+			@defined_exclude_const_list.map{|x| puts "  #{x}" }
+			p "@defined_unknown_list="
+			p @defined_unknown_list.size
+			@defined_unknown_list.map{|x| puts "  #{x}" }
+			p "@defined_not_respond_to_list="
+			p @defined_not_respond_to_list.size
+			@defined_not_respond_to_list.map{|x| puts "  #{x}" }
+			puts ""
+			p "@target_class_list="
+			p @target_class_list.size
+			@target_class_list.map{|x| puts "  #{x}"} 
+			p "@exclude_class_list="
+			p @exclude_class_list.size
+			@exclude_class_list.map{|x| puts "  #{x}"}
+			p "@exclude_const_list="
+			p @exclude_const_list.size
+			@exclude_const_list.map{|x| puts "  #{x}"} 
+		end
+
+		def analyze
+			level = 0
+      item = Item.new( Object , nil , 0 )
+      @diff_const.each do |x|
+				if item.respond_to?(:const_get)
+					obj = item.obj.const_get( x )
+					analyze_sub(obj , x, item, level)
+				else
+					@defined_not_respond_to_list << x
+				end
+			end
+			print_lists
+		end
+
+		def analyze_sub(obj , x, item, level)
+			case obj.class
+			when Class
+				if @target_class_list.include?( x )
+					puts "target_class_list.include x=#{x}"
+					unless @exclude_class_list.include?( x )
+						@defined_class_list << x
+						level += 1
+						item2 = Item.new( obj , item , level )
+					else
+						puts "  exclude_class_list.include x=#{x}"
+						@defined_exclude_class_list << x
+					end
+				else
+					puts "+ not target_class_list x=#{x} x.class=#{x.class}"
+					unless @exclude_class_list.include?( x )
+						puts " - not exclude_class_list x=#{x} x.class=#{x.class}"
+						unless @exclude_const_list.include?( x )
+							puts "unknow x=#{x}"
+							@defined_unknown_list << x
+						else
+							puts " * defined_exclude_const_list x=#{x} x.class=#{x.class}"
+							@defined_exclude_const_list << x
+						end
+					else
+						puts " / defined_exclude_class_list x=#{x} x.class=#{x.class}"
+						@defined_exclude_class_list << x
+					end
+				end
+			else
+				p "0 ELSE"
+				#
+			end
+		end
 
     def get_class_related_info( level , obj )
       if obj.respond_to?(:ancestors)
@@ -85,8 +212,8 @@ module RubyAnalyzer
 							# p "show0 found but excluded #{obj.to_s} in @target_class_list "
             end
           else
-						#puts "x=#{x} | obj=#{obj}|"
-						#puts "x=#{x} | obj.to_s=#{obj.to_s}|"
+						puts "x=#{x} | obj=#{obj}|"
+						puts "x=#{x} | obj.to_s=#{obj.to_s}|"
             unless @exclude_class_list.include?( obj.to_s )
 							#puts "@exclude_const_list=#{@exclude_const_list}"
 							unless @exclude_const_list.include?( x )
