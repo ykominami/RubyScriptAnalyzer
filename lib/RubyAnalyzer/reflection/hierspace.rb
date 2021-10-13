@@ -3,12 +3,13 @@ module RubyAnalyzer
     def initialize
       @hs = {}
     end
-    
+
     def add( key_array , value )
       key = ([""] + key_array).join('/')
       @hs[key] = value
-      
+
       key
     end
   end
 end
+

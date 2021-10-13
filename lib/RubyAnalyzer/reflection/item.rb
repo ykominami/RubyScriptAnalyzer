@@ -15,10 +15,10 @@ module RubyAnalyzer
 
     extend Forwardable
     def_delegator(:@obj, :respond_to?, :respond_to?)
-    
+
     @@ns = Ns.new
     @@inheritance = InheritanceSpace.new
-    
+
     def initialize( obj , parent , level )
       @obj = obj
       @name = obj.to_s
@@ -41,7 +41,7 @@ module RubyAnalyzer
     end
 =begin
     def respond_to?( method )
-      
+
       @obj.respond_to?( method )
     end
 =end

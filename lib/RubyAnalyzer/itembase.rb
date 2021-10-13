@@ -85,7 +85,6 @@ module RubyAnalyzer
 
         klass_index = RAEnv.klass_add( item.obj.class )
         inst_index = RAEnv.inst_add( item )
-
         @@cv.target_inst.add( inst_index )
         @@cv.target_class[klass_index] ||= []
         @@cv.target_class[klass_index] << inst_index

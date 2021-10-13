@@ -1,7 +1,7 @@
 require 'RubyAnalyzer/reflection/item'
 require 'RubyAnalyzer/util'
 
-module RubyAnalyzer  
+module RubyAnalyzer
   class Analyzer
     def initialize( target_classname_fname, exclude_classname_fname, exclude_constname_fname, fname , fname2=nil )
       @current = nil
@@ -18,7 +18,7 @@ module RubyAnalyzer
 
       require fname
       require fname2 if fname2
-      
+
       @now_consts = Object.constants
       @now_gv = global_variables
       @now_lv = local_variables
@@ -69,7 +69,7 @@ module RubyAnalyzer
 						p "0 ELSE"
 						#
 					end
-		
+
 				else
 					@defined_not_respond_to_list << x
 				end
@@ -78,7 +78,7 @@ module RubyAnalyzer
 		end
 
 		def print_lists
-			#				obj = Object.const_get( x ) 
+			#				obj = Object.const_get( x )
 			p "@defined_class_list="
 			p @defined_class_list.size
 			@defined_class_list.map{|x| puts "  #{x}" }
@@ -97,13 +97,13 @@ module RubyAnalyzer
 			puts ""
 			p "@target_class_list="
 			p @target_class_list.size
-			@target_class_list.map{|x| puts "  #{x}"} 
+			@target_class_list.map{|x| puts "  #{x}"}
 			p "@exclude_class_list="
 			p @exclude_class_list.size
 			@exclude_class_list.map{|x| puts "  #{x}"}
 			p "@exclude_const_list="
 			p @exclude_const_list.size
-			@exclude_const_list.map{|x| puts "  #{x}"} 
+			@exclude_const_list.map{|x| puts "  #{x}"
 		end
 
 		def analyze
@@ -173,10 +173,10 @@ module RubyAnalyzer
         print_instance_variables( level, obj )
         #
         show2( level + 1 , obj )
-        
-      end      
+
+      end
     end
-    
+
     def show_class_related_info( level , item )
       if item.respond_to?(:ancestors)
         puts "#{indent( level )}Class #{item.name} #{item.ancestors}"
@@ -198,7 +198,7 @@ module RubyAnalyzer
         p "show_class_related_info not respond_to? :ancestors #{obj.class}"
       end
     end
-    
+
     def show0( level , parent_item , list )
       list.each do |x|
         obj = parent_item.obj.const_get( x )
@@ -281,7 +281,6 @@ module RubyAnalyzer
     end
 
     def print_public_instance_methods( level, item )
-      
       if item.public_instance_methods.size > 0
         item.public_instance_methods.each do |x|
           puts "#{indent(level)} #{x.to_s}"
