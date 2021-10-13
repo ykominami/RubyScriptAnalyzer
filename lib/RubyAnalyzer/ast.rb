@@ -1,9 +1,9 @@
-require 'env'
-require 'astitem'
+require 'RubyAnalyzer/raenv'
+require 'RubyAnalyzer/astitem'
 
 module RubyAnalyzer
   class Ast
-    Env.register_for_ast( self )
+    RAEnv.register_for_ast( self )
     St = Struct.new( :hier , :cur, :level , :count)
 
     @@global_count = 0
@@ -54,7 +54,7 @@ module RubyAnalyzer
     end
 
     def initialize( fname )
-      @fpath_index = Env.register_fpath( fname )
+      @fpath_index = RAEnv.register_fpath( fname )
       @node_top = RubyVM::AbstractSyntaxTree.parse_file(fname)
       #      Astarisk.draw(node2)
     end

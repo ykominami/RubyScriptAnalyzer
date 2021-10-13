@@ -1,3 +1,5 @@
+require 'RubyAnalyzer/raenv'
+
 module RubyAnalyzer
   class Ast
     class Astitem
@@ -5,7 +7,7 @@ module RubyAnalyzer
 
       def initialize( node , fpath_index , parent_index )
         @parent_index = parent_index
-        @klass_index = Env.ast_klass_add( self.class )
+        @klass_index = RAEnv.ast_klass_add( self.class )
         @node = node
 #        @node_index = Env.inst_add( node )
         @first_column = node.first_column
@@ -18,7 +20,7 @@ module RubyAnalyzer
 #        @ra_id = Ast.get_count
         @fpath_index = fpath_index
         #        @name = [node.class.to_s , self.class.get_count].join("-")
-        @self_inst_index = Env.ast_inst_add( self )
+        @self_inst_index = RAEnv.ast_inst_add( self )
         Ast.register( @klass_index , @self_inst_index )
         @children = {}
       end
@@ -63,7 +65,7 @@ module RubyAnalyzer
             end
           elsif x.type != nil
             klass = Object.const_get(IDENT_CLASS_NAME[x.type.to_s])
-            klass_id = Env.klass_add( klass )
+            klass_id = RAEnv.klass_add( klass )
             inst = klass.new(x , @fpath_id, @self_inst_index)
             inst.node_method
             @children[klass_id] ||= Listex.new
@@ -77,4 +79,4 @@ module RubyAnalyzer
   end # Ast
 end # module RubyAnalyzer
 
-require 'ast_inner'
+require 'RubyAnalyzer/ast_inner'

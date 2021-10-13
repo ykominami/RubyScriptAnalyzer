@@ -1,14 +1,14 @@
 # coding: utf-8
-require 'item'
-require 'itemroot'
-require 'env'
-require 'ns'
-require 'util'
+require 'RubyAnalyzer/item'
+require 'RubyAnalyzer/itemroot'
+require 'RubyAnalyzer/raenv'
+require 'RubyAnalyzer/ns'
+require 'RubyAnalyzer/util'
 
 module RubyAnalyzer
   class Analyzer
 
-    Env.register_reflection( self )
+    RAEnv.register_reflection( self )
     St = Struct.new( "Analyzer" , :ns )
 
     class << self
@@ -73,9 +73,9 @@ module RubyAnalyzer
 
       analyze0( 1, @ns_root , @diff_const )
 
-      # 各くらすの先祖を登録す る
+      # 各クラスの先祖を登録す る
       Item.register_all_ancestor_of_all_item
-      # ゆーざ定義くらすで定義されためそっど、変数を差分として抽出し、設定
+      # ユーザ定義クラスで定義されたメソッド、変数を差分として抽出し、設定
       Item.set_for_user_defined_class
 
       #

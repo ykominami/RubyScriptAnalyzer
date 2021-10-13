@@ -1,5 +1,5 @@
-require 'itembase'
-require 'util'
+require 'RubyAnalyzer/itembase'
+require 'RubyAnalyzer/util'
 
 module RubyAnalyzer
   class Itemroot < Itembase
