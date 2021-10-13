@@ -1,12 +1,12 @@
 require 'optparse'
 require 'pp'
-require 'util'
+require 'RubyAnalyzer/util'
 require 'logger'
 
-require 'env'
-require 'contents'
-require 'klassoutput'
-require 'rubysource'
+require 'RubyAnalyzer/env'
+#require 'RubyAnalyzer/contents'
+require 'RubyAnalyzer/klassoutput'
+require 'RubyAnalyzer/rubysource'
 
 module RubyAnalyzer
   opts = {}

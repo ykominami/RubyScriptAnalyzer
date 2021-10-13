@@ -1,4 +1,4 @@
-require 'ident'
+require 'RubyAnalyzer/ident'
 
 module RubyAnalyzer
   class Ast

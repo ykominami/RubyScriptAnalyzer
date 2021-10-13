@@ -1,8 +1,9 @@
-require 'util'
+require 'RubyAnalyzer/util'
+require 'RubyAnalyzer/raenv'
 
 module RubyAnalyzer
   class Ns
-    Env.register_reflection( self )
+    RAEnv.register_reflection( self )
     St = Struct.new( :stack , :root, :current )
 
     class << self
@@ -16,7 +17,7 @@ module RubyAnalyzer
       end
 
       def add_env( obj )
-        inst_index = Env.inst_add( obj )
+        inst_index = RAEnv.inst_add( obj )
         @@env[ inst_index ] = {}
         @@env[ inst_index ]['iv'] = St.new
       end

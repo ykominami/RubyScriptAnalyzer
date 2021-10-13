@@ -1,11 +1,13 @@
-require 'util'
-require 'minitest'
+require 'RubyAnalyzer/util'
+#require 'minitest/test'
+#require 'minitest/unit'
+#require 'minitest/autorun'
 
 module RubyAnalyzer
   class Rubysource
-    attr_accessor :assertions
+#    attr_accessor :assertions
 
-    include Minitest::Assertions
+#    include Minitest::Assertions
 
     def initialize( opts )
       self.assertions = 0

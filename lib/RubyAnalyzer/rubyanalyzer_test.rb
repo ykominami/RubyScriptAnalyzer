@@ -1,14 +1,16 @@
+require 'RubyAnalyzer/raenv'
+
 module RubyAnalyzer
   class App
     def test_for_script
       #  Env. inspect_env
       kind = :reflection
-      keys = Env.get_object_hash_keys( kind )
+      keys = RAEnv.get_object_hash_keys( kind )
       keys.each do |x|
-        obj = Env.object_at(x, kind)
+        obj = RAEnv.object_at(x, kind)
       end
 
-      env_for_ast = Env.get_env_for_ast
+      env_for_ast = RAEnv.get_env_for_ast
       
     end
     

@@ -1,9 +1,9 @@
-require 'util'
-require 'env'
+require 'RubyAnalyzer/util'
+require 'RubyAnalyzer/raenv'
 
 module RubyAnalyzer
   class HierSpace
-    Env.register_reflection( self )
+    RAEnv.register_reflection( self )
 
     class << self
       def init( env , kind )
@@ -16,7 +16,7 @@ module RubyAnalyzer
       end
 
       def add_env( inst )
-        inst_index = Env.inst_add( inst )
+        inst_index = RAEnv.inst_add( inst )
         @@env[ inst_index ] = {}
       end
     end

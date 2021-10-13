@@ -1,0 +1,1 @@
+require 'rubyanalyzer2'

@@ -1,8 +1,8 @@
 # coding: utf-8
-require 'inheritancespace'
-require 'env'
-require 'util'
-require 'listex'
+require 'RubyAnalyzer/inheritancespace'
+require 'RubyAnalyzer/raenv'
+require 'RubyAnalyzer/util'
+require 'RubyAnalyzer/listex'
 
 module RubyAnalyzer
   class Itembase
@@ -10,7 +10,7 @@ module RubyAnalyzer
 
     #    extend Forwardable
 
-    Env.register_reflection( self )
+    RAEnv.register_reflection( self )
     @@module_name = Util.get_top_module_name( self )
 
     #    INFO_VAR_STRUCT = Struct.new("Info" , *INFO_STRUCT_SYMBOLS)
@@ -57,7 +57,7 @@ module RubyAnalyzer
       
       def register_all_ancestor_of_all_item
         @@cv.target_inst.each do |k|
-          obj = Env.inst_at(k)
+          obj = RAEnv.inst_at(k)
           register_all_ancestor( obj )
         end
       end
@@ -69,7 +69,7 @@ module RubyAnalyzer
       end
       
       def register_as_root( item )
-        inst_index = Env.inst_index( item )
+        inst_index = RAEnv.inst_index( item )
         @@cv.root = inst_index
       end
 
@@ -83,8 +83,8 @@ module RubyAnalyzer
           raise
         end
 
-        klass_index = Env.klass_add( item.obj.class )
-        inst_index = Env.inst_add( item )
+        klass_index = RAEnv.klass_add( item.obj.class )
+        inst_index = RAEnv.inst_add( item )
         
         @@cv.target_inst.add( inst_index )
         @@cv.target_class[klass_index] ||= []
@@ -111,14 +111,14 @@ module RubyAnalyzer
         Util.debug( "==== set_for_user_defined_class" )
         size = @@cv.target_inst.size
         0.upto(size-1).each do |index|
-          item = Env.inst_at( @@cv.target_inst.at(index) )
+          item = RAEnv.inst_at( @@cv.target_inst.at(index) )
           ancestor_list = item.ancestor_list
           if item.respond_to?( :name )
             Util.debug( "item.name=#{item.name}" )
           end
           Util.debug( "ancestor_list=#{ancestor_list}" )
           ancestor_list.each do | ancestor_klass_index |
-            ancestor_item = Env.klass_at( ancestor_klass_index )
+            ancestor_item = RAEnv.klass_at( ancestor_klass_index )
             Util.debug( "ancestor_item.name=#{ancestor_item.name}" )
             INFO_STURCT_WITHOUT_FALSE_SYMBOLS.each do |kind|
               Util.debug( "kind=#{kind}" )
@@ -142,18 +142,18 @@ module RubyAnalyzer
       def sort_by_ancestor
         xhs = {}
         @@cv.target_inst.each do |index|
-          v = Env.inst_at(index)
+          v = RAEnv.inst_at(index)
           xhs[ v.ancestor ] ||= []
           xhs[ v.ancestor ] << index
         end
         @@cv.target_inst.each do |index|
-          v = Env.inst_at(index)
+          v = RAEnv.inst_at(index)
           xhs[ v.ancestor ] ||= []
           xhs[ v.ancestor ] << index
         end
         xhs.each do |klass_index , v|
           "klass_index=#{klass_index}"
-          array = v.map{|i| Env.inst_at(i)}
+          array = v.map{|i| RAEnv.inst_at(i)}
           Util.debug( "# #{klass_index}" )
           Util.debug_pp( array.map{|x| x.name } )
         end
@@ -194,7 +194,7 @@ module RubyAnalyzer
       end
 
       def show_class_related_info( klass , target = :SELF )
-        klass_index = Env.klass_index( klass )
+        klass_index = RAEnv.klass_index( klass )
         raise unless klass_index
         array = @@cv.target_class[ klass_index ]
         unless array
@@ -211,7 +211,7 @@ module RubyAnalyzer
 
       def show_all_class_related_info( target = :SELF )
         @@cv.target_inst.each do |index|
-          v = Env.inst_at(index)
+          v = RAEnv.inst_at(index)
           if v.respond_to?( :print_class_related_info )
             v.print_class_related_info( target )
           end
@@ -219,7 +219,7 @@ module RubyAnalyzer
       end
 
       def get_item_of_object
-        klass_index = Env.klass_index( Object )
+        klass_index = RAEnv.klass_index( Object )
         @@cv.target_class.at[ klass_index ]
       end
     end
@@ -230,16 +230,16 @@ module RubyAnalyzer
     end
 
     def init_basic(obj)
-      inst_index = Env.inst_add(obj)
+      inst_index = RAEnv.inst_add(obj)
       @obj = inst_index
       @name = obj.to_s
       ancestor_list = []
       if obj.respond_to?(:ancestors)
         ancestor_list = obj.ancestors.reverse
         ancestor_list.pop
-        @ancestor_list = ancestor_list.map{|x| Env.klass_add(x)}
+        @ancestor_list = ancestor_list.map{|x| RAEnv.klass_add(x)}
         @ancestor_list.each do |klass_index|
-          o = Env.klass_at( klass_index )
+          o = RAEnv.klass_at( klass_index )
           if o == nil
             raise
           end
@@ -298,7 +298,7 @@ module RubyAnalyzer
     end
 
     def add_ns_child( item )
-      index = Env.inst_add(item)
+      index = RAEnv.inst_add(item)
       @ns_children.add( index )
     end
 

@@ -2,11 +2,11 @@ require 'set'
 require 'pstore'
 require 'yaml/store'
 require 'pry'
-require 'listex'
-require 'env_test'
+require 'RubyAnalyzer/listex'
+#require 'RubyAnalyzer/raenv_test'
 
 module RubyAnalyzer
-  class Env
+  class RAEnv
     @@env = {}
     @@env[:global] = {:fpath => Listex.new }
     #
@@ -224,7 +224,7 @@ module RubyAnalyzer
 
       # base
       def register_base( klass , kind )
-        klass_index = Env.klass_add(klass)
+        klass_index = RAEnv.klass_add(klass)
         @@klass_list[kind].add( klass_index )
       end
 
