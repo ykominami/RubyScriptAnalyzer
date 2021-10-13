@@ -10,4 +10,4 @@
 /vendor/
 # rspec failure tracking
 .rspec_status
-
+/ra.bfg-report/
