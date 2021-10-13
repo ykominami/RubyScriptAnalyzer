@@ -22,7 +22,7 @@ module RubyAnalyzer
           #
         end
       end
-      
+
       def push_to_ns( item )
         @@cv.ns.push( item )
         Util.debug( "++++ item.ns_key=#{item.ns_key} #{item.ns_key.class}" )
@@ -31,13 +31,13 @@ module RubyAnalyzer
       def get_ns_key
         @@cv.ns.get_ns_key
       end
-      
+
       def pop_from_ns
         @@cv.ns.pop
       end
 
     end
-    
+
     def initialize( yaml )
       @input_fnames = yaml["input_file"]
       #
@@ -60,7 +60,7 @@ module RubyAnalyzer
       @input_fnames.each do |fname|
         require fname
       end
-      
+
       @now_consts = Object.constants
       @now_gv = global_variables
       @now_lv = local_variables
@@ -121,7 +121,7 @@ module RubyAnalyzer
         #
       end
     end
-    
+
     def analyze1( level , item , list )
       parent_item = item
 

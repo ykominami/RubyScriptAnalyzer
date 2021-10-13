@@ -38,7 +38,7 @@ module RubyAnalyzer
           @@cv_oc = @@env[:INFO][:OPEN_CLASS]
           @@env[:INFO][:WITHOUT_OPEN_CLASS] = InfoStruct.new
           @@cv_without_oc = @@env[:INFO][:WITHOUT_OPEN_CLASS]
-          
+
           @@cv.inheritance = InheritanceSpace.new
           @@cv.target_inst = Listex.new
           @@cv.target_class = {}
@@ -54,20 +54,20 @@ module RubyAnalyzer
       def set_module_name( name )
         @@module_name = name
       end
-      
+
       def register_all_ancestor_of_all_item
         @@cv.target_inst.each do |k|
           obj = RAEnv.inst_at(k)
           register_all_ancestor( obj )
         end
       end
-      
+
       def register_all_ancestor( obj )
         unless obj.kind_of?( Item )
                            Itembase.new( obj )
         end
       end
-      
+
       def register_as_root( item )
         inst_index = RAEnv.inst_index( item )
         @@cv.root = inst_index
@@ -85,7 +85,7 @@ module RubyAnalyzer
 
         klass_index = RAEnv.klass_add( item.obj.class )
         inst_index = RAEnv.inst_add( item )
-        
+
         @@cv.target_inst.add( inst_index )
         @@cv.target_class[klass_index] ||= []
         @@cv.target_class[klass_index] << inst_index
@@ -124,9 +124,9 @@ module RubyAnalyzer
               Util.debug( "kind=#{kind}" )
               if ancestor_item.respond_to?(:iv)
                 Util.debug( "ancestor_item.iv[ kind ]=#{ancestor_item.iv[ kind ]}")
-                
+
                 item.iv[ kind ] -= ancestor_item.iv[ kind ]
-                
+
                 Util.debug( "item.iv[ kind ]=#{item.iv[ kind ]}" )
                 Util.debug( "" )
               end
@@ -223,7 +223,7 @@ module RubyAnalyzer
         @@cv.target_class.at[ klass_index ]
       end
     end
-    
+
     def initialize( obj )
       init_basic( obj )
       init_env( obj )
@@ -260,7 +260,7 @@ module RubyAnalyzer
       @ns_children = Listex.new
     end
 
-    def init_env( obj )      
+    def init_env( obj )
       @env = {}
       @env[:INFO] = {}
       @iv = @env[:INFO][:SELF] = INFO_STRUCT_VAR.new
@@ -313,12 +313,12 @@ module RubyAnalyzer
           from.iv[sym] = tmp
         end
         @iv_oc[sym] = tmp
-        
+
         unless @iv[sym]
           @iv[sym] = []
         end
         @iv_oc[sym] = @iv[sym] - from.iv[sym]
-        
+
         @iv_without_oc[sym] = @iv[sym] - @iv_oc[sym]
       }
     end
@@ -494,3 +494,4 @@ module RubyAnalyzer
 
   end
 end
+

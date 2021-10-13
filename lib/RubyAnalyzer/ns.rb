@@ -59,4 +59,3 @@ module RubyAnalyzer
     end
   end
 end
-

@@ -7,7 +7,7 @@ module RubyAnalyzer
       def init
         @@root = nil
       end
-      
+
       def set_root( item )
         @@root = item
       end
@@ -25,7 +25,7 @@ module RubyAnalyzer
         get_root.show_tree
       end
     end
-    
+
     def initialize( obj , ns_parent_item , level , top = false )
       @level = level
       @parent = ns_parent_item
@@ -51,7 +51,7 @@ module RubyAnalyzer
         @iv[sym] = itempartx.iv[sym]
       }
     end
-    
+
     def show_tree
       p @name
     end

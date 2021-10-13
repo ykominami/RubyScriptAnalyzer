@@ -36,6 +36,5 @@ module RubyAnalyzer
       }
       Util.debug( "===init_env_for_root inst=#{inst} End" )
     end
-    
   end
 end

@@ -7,7 +7,7 @@ module RubyAnalyzer
     St = Struct.new( :hier , :cur, :level , :count)
 
     @@global_count = 0
-    
+
     class << self
       def init( env , kind )
         case kind
@@ -22,14 +22,14 @@ module RubyAnalyzer
         else
           #
         end
-        
+
       end
 
       def register( klass_index, inst_index )
         @@env[klass_index] ||= []
         @@env[klass_index] << inst_index
       end
-      
+
       def get_count
         count = @@cv.count
         @@cv.count += 1

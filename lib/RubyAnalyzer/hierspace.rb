@@ -24,7 +24,7 @@ module RubyAnalyzer
     def initialize
       @hs = HierSpace.add_env( self )
     end
-    
+
     def add( key_array , value )
       key = ([""] + key_array).join('/')
       @hs[key] ||= []

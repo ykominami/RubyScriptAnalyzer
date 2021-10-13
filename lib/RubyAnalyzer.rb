@@ -23,3 +23,4 @@ module RubyAnalyzer
   require 'RubyAnalyzer/util.rb'
 
 end
+

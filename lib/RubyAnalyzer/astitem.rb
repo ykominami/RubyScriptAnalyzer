@@ -28,7 +28,7 @@ module RubyAnalyzer
       def post_process
         @node = nil
       end
-      
+
       def node_method( )
         @level = Ast.get_level
         Ast.hier_push( self )
@@ -38,7 +38,7 @@ module RubyAnalyzer
         child_process
 
         post_process
-        
+
         Ast.hier_pop
       end
 
