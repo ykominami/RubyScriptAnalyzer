@@ -23,21 +23,21 @@ module RubyAnalyzer
       @obj = obj
       @name = obj.to_s
       @level = level
-      @ancestors = @obj.ancestors
+      @ancestors = @obj.respond_to?(:ancestors) ? @obj.ancestors : []
       @inheritace_key = @@inheritance.add( @ancestors , self )
       @ns_key = @@ns.add( parent ,  self )
 
-      @instance_methods = obj.instance_methods
-      @public_instance_methods = obj.public_instance_methods
-      @private_instance_methods = obj.private_instance_methods
-      @protected_instance_methods = obj.protected_instance_methods
-      @instance_methods_in_user_defined_class = obj.public_instance_methods false
-      @public_instance_methods_in_user_defined_class = obj.public_instance_methods false
-      @private_instance_methods_in_user_defined_class = obj.private_instance_methods false
-      @protected_instance_methods_in_user_defined_class = obj.protected_instance_methods false
-      @class_methods = obj.singleton_methods
-      @class_methods_in_user_defined_class = obj.singleton_methods false
-      @instance_variables = obj.instance_variables
+      @instance_methods = @obj.respond_to?(:instance_methods) ? @obj.instance_methods : []
+      @public_instance_methods = @obj.respond_to?(:public_instance_methods) ? @obj.public_instance_methods : []
+      @private_instance_methods = @obj.respond_to?(:private_instance_methods) ? @obj.private_instance_methods : []
+      @protected_instance_methods = @obj.respond_to?(:protected_instance_methods) ? @obj.protected_instance_methods : []
+      @instance_methods_in_user_defined_class = @obj.respond_to?(:public_instance_methods) ? @obj.public_instance_methods(false) : [] 
+      @public_instance_methods_in_user_defined_class = @obj.respond_to?(:public_instance_methods) ? @obj.public_instance_methods(false) : [] 
+      @private_instance_methods_in_user_defined_class = @obj.respond_to?(:private_instance_methods) ? @obj.private_instance_methods(false) : [] 
+      @protected_instance_methods_in_user_defined_class = @obj.respond_to?(:protected_instance_methods) ? @obj.protected_instance_methods(false) : []
+      @class_methods = @obj.respond_to?(:singleton_methods) ? @obj.singleton_methods : []
+      @class_methods_in_user_defined_class = @obj.respond_to?(:singleton_methods) ? @obj.singleton_methods(false) : []
+      @instance_variables = @obj.respond_to?(:instance_variables) ? @obj.instance_variables : []
     end
 =begin
     def respond_to?( method )

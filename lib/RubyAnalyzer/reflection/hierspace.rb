@@ -5,7 +5,6 @@ module RubyAnalyzer
     end
     
     def add( key_array , value )
-      key_array
       key = ([""] + key_array).join('/')
       @hs[key] = value
       
