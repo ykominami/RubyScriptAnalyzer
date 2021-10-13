@@ -1,7 +1,8 @@
 require 'pry'
+require 'RubyAnalyzer/raenv'
 
 module RubyAnalyzer
-  class Env
+  class RAEnv
     class << self
       def get_env_ast_by_index( index )
         @@env[:ast][index]
@@ -101,5 +102,5 @@ module RubyAnalyzer
         end
       end
     end
-  end # Env
+  end # RAEnv
 end # module RubyAnalyzer

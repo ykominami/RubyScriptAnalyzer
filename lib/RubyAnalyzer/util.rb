@@ -1,7 +1,7 @@
 require 'stringio'
 require 'logger'
 
-require 'env'
+require 'RubyAnalyzer/raenv'
 
 module RubyAnalyzer
   class Util
@@ -66,6 +66,10 @@ module RubyAnalyzer
       def unknown( mes )
         @@cv.logger.unknown( mes )
       end
+
+      def remove_empty_line( list)
+        list.map{|x| x.chomp}.select{ |y| y !~ /^\s*$/ }
+      end      
     end
   end
 end # module RubyAnalyzer

@@ -1,0 +1,11 @@
+input_file:
+#  - /mnt/v/ext2/gem/tecsgen/y51.rb
+#  - /mnt/v/ext2/gem/tecsgen/y52.rb
+  - /mnt/v/ext2/svn-tecs/tecsgen/trunk2/tecsgen/tecsgen.rb
+# 
+#  - /mnt/v/ext2/gem/tecsgen/spec/test_data/r.rb
+  - /mnt/v/ext2/gem/tecsgen/spec/test_data/r-a.rb
+target_class_file:
+  - /mnt/c/Users/ykomi/binr/target_class-list-3.txt
+exclude_class_file:
+  - /mnt/c/Users/ykomi/binr/ra_exclude_classname.txt

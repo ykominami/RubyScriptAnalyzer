@@ -1,34 +1,26 @@
-require 'util'
-require 'hierspace'
-require 'item'
-require 'ns'
-require 'analyzer'
-require 'ast'
-require 'rubyanalyzer_test'
-
 require 'optparse'
 require 'set'
 require 'logger'
 require 'yaml'
-require 'astarisk'
+#require 'astarisk'
 require 'pathname'
 require 'find'
 require 'fileutils'
 require 'benchmark'
-require 'env'
+#require 'env'
 require 'pry'
 
-require 'env_test'
-require 'rubyanalyzer_test'
+require 'RubyAnalyzer/util'
+require 'RubyAnalyzer/hierspace'
+require 'RubyAnalyzer/item'
+require 'RubyAnalyzer/ns'
+require 'RubyAnalyzer/analyzer'
+require 'RubyAnalyzer/ast'
 
-module RubyAnalyzer
-  #
-  #require 'optparse'
-  #require 'nkf'
-  #require 'pp'
-  #require 'racc'
-  #require 'kconv'
-  
+require 'RubyAnalyzer/env_test'
+require 'RubyAnalyzer/rubyanalyzer_test'
+
+module RubyAnalyzer  
   class App
     def initialize()
       #Util.level = Logger::Severity::DEBUG

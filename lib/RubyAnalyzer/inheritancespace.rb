@@ -1,4 +1,4 @@
-require 'hierspace'
+require 'RubyAnalyzer/hierspace'
 
 module RubyAnalyzer
   class InheritanceSpace < HierSpace
