@@ -68,9 +68,6 @@ module RubyAnalyzer
       object_item.set_adjust_result(:Object, 0)
       #
       #
-#      @item_by_name[object_item.name_sym_str] = object_item
-#      @item_by_sym[:Object] = object_item
-#      @name_by_item[object_item] = "Object"
       analyze_child_items(object_item, @diff_const)
       #
       #dump_analyze_result
@@ -93,19 +90,12 @@ module RubyAnalyzer
           level2 = item.level + 1
           item2 = Item.new(const_name, obj2, item, level2)
           #
-          #@objs[obj2] = obj2
-          #
           const_name_str = Util.sym_to_name(const_name)
-          #@item_by_name[item2.name_str] = item2
-          #@item_by_sym[item2.name_sym] = item2
-          #@name_by_item[item2] = item2.name_str
-
           analyze_sub(item2, true)
         end
       else
 #        Util.debug_pp "analyze_child_items not_respond item.nme=#{item.name_sym}"
         @result.not_respond_to_list.add(item)
-        #adjust_item(item, :not_respond_to)
         @output_yaml[:not_respond_to][item.name_sym] = item.dump_in_hash
       end
     end
@@ -133,31 +123,22 @@ module RubyAnalyzer
             item.set_adjust_type(:exclude_const)
           else
             @result.unknown_class_list.add(item)
-            #adjust_item(item, :unknown_class)
-            #@output_yaml[:unknown_class][item.name_sym] = item.dump_in_hash
             item.set_adjust_type(:unknown_class)
           end
         end
       when :module
         if @files.target_module_list.include?(item.name_sym)
- #         Util.debug_pp "target :module #{item.name_sym}"
- #         Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
           item.target_on
           @result.module_list.add(item)
           item.set_adjust_type(:module)
-          # @output_yaml[:module][item.name_sym] = item.dump_in_hash
           analyze_child_items(item, item.ruby_obj.constants, recursive)  if item.adjust_result_nil_or_0?
         else
           if @files.exclude_module_list.include?(item.name_sym)
-            # Util.debug_pp "exclude :module #{item.name_sym}"
             @result.exclude_module_list.add(item)
             @not_item_adjust_result[:exclude_module][item.name_sym] = {:item => item}
             item.set_adjust_type(:exclude_module)
           else
-#            Util.debug_pp "unkown :module #{item.name_sym}"
             @result.unknown_module_list.add(item)
-            #adjust_item(item, :unknown_module)
-            #@output_yaml[:unknown_module][item.name_sym] = item.dump_in_hash
             item.set_adjust_type(:unknown_module)
           end
         end
@@ -168,10 +149,7 @@ module RubyAnalyzer
           item.set_adjust_type(:exclude_instance)
         else
           item.target_on
-#          Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
           @result.instance_list.add(item)
-          #adjust_item(item, :instance)
-          # <@output_yaml[:instance][item.name_sym] = item.dump_in_hash
           item.set_adjust_type(:instance)
         end
       end
