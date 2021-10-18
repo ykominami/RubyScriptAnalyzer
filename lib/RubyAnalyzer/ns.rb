@@ -13,7 +13,7 @@ module RubyAnalyzer
           @@env = env
         else
           #
-          end
+        end
       end
 
       def add_env( obj )
