@@ -1,20 +1,35 @@
-require 'RubyAnalyzer/reflection/item'
-require 'RubyAnalyzer/util'
+require 'yaml'
+require "RubyAnalyzer/util"
+require "RubyAnalyzer/reflection/item"
+require "RubyAnalyzer/reflection/analyzer/analyzerfiles"
+require "RubyAnalyzer/reflection/analyzer/analyzerresult"
+require "RubyAnalyzer/reflection/analyzer/varnametable"
+require "RubyAnalyzer/reflection/tuple"
+require "RubyAnalyzer/reflection/analyzer/adjust"
+require "RubyAnalyzer/reflection/analyzer/yaml"
+require "RubyAnalyzer/reflection/analyzer/debug"
 
 module RubyAnalyzer
   class Analyzer
-    def initialize( target_classname_fname, exclude_classname_fname, exclude_constname_fname, fname , fname2=nil )
-      @current = nil
-			fnames = [target_classname_fname, exclude_classname_fname, exclude_constname_fname]
-      @target_class_list , @exclude_class_list ,  @exclude_const_list = fnames.map{ |fname|
-				list = File.readlines( fname )
-				list2 = list.map{ |l| l.split('#').first }
-				Util.remove_empty_line( list2 ).map{ |x| x.to_sym }
-			}
+    attr_reader :init_consts, :init_items
 
-			@init_consts = Module.constants
+    def initialize(output_filepath, analyzerfiles, fname , fname2 = nil)
+      Util.level = Logger::DEBUG
+      #Util.level = Logger::FATAL
+      #@data_op_flag = :one
+      #@data_op_flag = :two
+      @data_op_flag = :all
+      #
+      #@data_op_level = :one
+      @data_op_level = :all
+      #
+      @output_filepath = output_filepath
+      @files = analyzerfiles
+      @init_consts = Module.constants
       @init_gv = global_variables
       @init_lv = local_variables
+      @init_items = {}
+      @init_items[:Object] = Itemobj.new(:Object, Object, nil, 0)
 
       require fname
       require fname2 if fname2
@@ -22,361 +37,143 @@ module RubyAnalyzer
       @now_consts = Object.constants
       @now_gv = global_variables
       @now_lv = local_variables
+      @now_items = {}
+      @now_items[:Object] = Itemobj.new(:Object, Object, nil, 0)
 
       @diff_const = @now_consts - @init_consts
       @diff_gv = @now_gv - @init_gv
+      @diff_gvname = @diff_gv.map{|x| x.to_s.gsub(/^:/, "")}
       @diff_lv = @now_lv - @init_lv
+      @diff_object = Itemdiff.new(@init_items[:Object], @now_items[:Object])
 
-			@defined_class_list = []
-			@defined_exclude_class_list = []
-			@defined_exclude_const_list = []
-			@defined_unknown_list = []
-			@defined_not_respond_to_list = []
-#      item = Item.new( Object , nil , 0 )
-#      show0( 0, item , @diff_const )
+      @output_yaml = [:class, :module, :instance,
+                      :unknown_class, :unknown_module, :unknown_instance,
+                      :not_respond_to,
+                    ].reduce({}) {|h, k| h[k] = {}; h}
+      @item_adjust_result = [:class, :module, :instance,
+                              :unknown_class, :unknown_module, :unknown_instance,
+                              :not_respond_to,
+                              :exclude_class, :exclude_module, :exclude_instance, :exclude_const,
+                            ].reduce({}) {|h, k| h[k] = {}; h}
+      @not_item_adjust_result = [:exclude_class, :exclude_const, :exclude_module, :exclude_instance,
+                            ].reduce({}) {|h, k| h[k] = {}; h}
+      @result = AnalyzerResult.new
     end
 
-		def analyze0
-			level = 0
-      item = Item.new( Object , nil , 0 )
-      @diff_const.each do |x|
-				if item.respond_to?(:const_get)
-					obj = item.obj.const_get( x )
-					# analyze_sub(obj , x, item, level)
-					case obj.class
-					when Class
-						if @target_class_list.include?( x )
-							unless @exclude_class_list.include?( x )
-								item = Item.new( obj , item , level )
-								@defined_class_list << x
-							else
-								# p "show0 found but excluded #{obj.to_s} in @target_class_list "
-								@defined_exclude_class_list << x
-							end
-						else
-							unless @exclude_class_list.include?( x )
-								unless @exclude_const_list.include?( x )
-									puts "unknow x=#{x}"
-									@defined_unknown_list << x
-								else
-									@defined_exclude_const_list << x
-								end
-							else
-								@defined_exclude_class_list << x
-							end
-						end
-					else
-						p "0 ELSE"
-						#
-					end
-
-				else
-					@defined_not_respond_to_list << x
-				end
-			end
-			print_lists
-		end
-
-		def print_lists
-			#				obj = Object.const_get( x )
-			p "@defined_class_list="
-			p @defined_class_list.size
-			@defined_class_list.map{|x| puts "  #{x}" }
-			p "@defined_exclude_class_list ="
-			p @defined_exclude_class_list.size
-			@defined_exclude_class_list.map{|x| puts "  #{x}" }
-			p "@defined_exclude_const_list="
-			p @defined_exclude_const_list.size
-			@defined_exclude_const_list.map{|x| puts "  #{x}" }
-			p "@defined_unknown_list="
-			p @defined_unknown_list.size
-			@defined_unknown_list.map{|x| puts "  #{x}" }
-			p "@defined_not_respond_to_list="
-			p @defined_not_respond_to_list.size
-			@defined_not_respond_to_list.map{|x| puts "  #{x}" }
-			puts ""
-			p "@target_class_list="
-			p @target_class_list.size
-			@target_class_list.map{|x| puts "  #{x}"}
-			p "@exclude_class_list="
-			p @exclude_class_list.size
-			@exclude_class_list.map{|x| puts "  #{x}"}
-			p "@exclude_const_list="
-			p @exclude_const_list.size
-			@exclude_const_list.map{|x| puts "  #{x}"
-		end
-
-		def analyze
-			level = 0
-      item = Item.new( Object , nil , 0 )
-      @diff_const.each do |x|
-				if item.respond_to?(:const_get)
-					obj = item.obj.const_get( x )
-					analyze_sub(obj , x, item, level)
-				else
-					@defined_not_respond_to_list << x
-				end
-			end
-			print_lists
-		end
-
-		def analyze_sub(obj , x, item, level)
-			case obj.class
-			when Class
-				if @target_class_list.include?( x )
-					puts "target_class_list.include x=#{x}"
-					unless @exclude_class_list.include?( x )
-						@defined_class_list << x
-						level += 1
-						item2 = Item.new( obj , item , level )
-					else
-						puts "  exclude_class_list.include x=#{x}"
-						@defined_exclude_class_list << x
-					end
-				else
-					puts "+ not target_class_list x=#{x} x.class=#{x.class}"
-					unless @exclude_class_list.include?( x )
-						puts " - not exclude_class_list x=#{x} x.class=#{x.class}"
-						unless @exclude_const_list.include?( x )
-							puts "unknow x=#{x}"
-							@defined_unknown_list << x
-						else
-							puts " * defined_exclude_const_list x=#{x} x.class=#{x.class}"
-							@defined_exclude_const_list << x
-						end
-					else
-						puts " / defined_exclude_class_list x=#{x} x.class=#{x.class}"
-						@defined_exclude_class_list << x
-					end
-				end
-			else
-				p "0 ELSE"
-				#
-			end
-		end
-
-    def get_class_related_info( level , obj )
-      if obj.respond_to?(:ancestors)
-        @current = Item.new( obj )
-        puts "#{indent( level )}Class #{obj.to_s} #{obj.ancestors}"
-        puts "#{indent( level )} == instance_methods =="
-        print_instance_methods( level, obj )
-        puts "#{indent( level )} == public_instance_method =="
-        print_public_instance_methods_in_user_defined_class( level, obj )
-        puts "#{indent( level )} == private_instance_method =="
-        print_private_instance_methods_in_user_defined_class( level, obj )
-        puts "#{indent( level )} == protected_instance_method =="
-        print_protected_instance_methods_in_user_defined_class( level, obj )
-        puts "#{indent( level )} == class_variables =="
-        print_class_variables( level, obj )
-        puts "#{indent( level )} == instance_variables =="
-        print_instance_variables( level, obj )
-        #
-        show2( level + 1 , obj )
-
-      end
+    def analyze
+#      Util.debug "called analyze"
+      level = 0
+      object_item = Item.new(:Object, Object, nil, level)
+      object_item.set_adjust_type(:Object)
+      object_item.set_adjust_result(:Object, 0)
+      #
+      #
+#      @item_by_name[object_item.name_sym_str] = object_item
+#      @item_by_sym[:Object] = object_item
+#      @name_by_item[object_item] = "Object"
+      analyze_child_items(object_item, @diff_const)
+      #
+      #dump_analyze_result
+      #
+      adjust_items(object_item)
+      #
+      #dump_adjust_items_result
+      #
+      prepare_yaml_dump(object_item)
+      #
+      yaml_dump(@output_filepath)
     end
 
-    def show_class_related_info( level , item )
-      if item.respond_to?(:ancestors)
-        puts "#{indent( level )}Class #{item.name} #{item.ancestors}"
-        puts "#{indent( level )} == instance_methods =="
-        print_instance_methods( level, item )
-        puts "#{indent( level )} == public_instance_method =="
-        print_public_instance_methods_in_user_defined_class( level, obj )
-        puts "#{indent( level )} == private_instance_method =="
-        print_private_instance_methods_in_user_defined_class( level, obj )
-        puts "#{indent( level )} == protected_instance_method =="
-        print_protected_instance_methods_in_user_defined_class( level, obj )
-        puts "#{indent( level )} == class_variables =="
-        print_class_variables( level, obj )
-        puts "#{indent( level )} == instance_variables =="
-        print_instance_variables( level, obj )
-        #
-        show2( level + 1 , obj )
+    def analyze_child_items(item, list, recursive = false)
+      if item.respond_to?(:const_get)
+#        Util.debug_pp "analyze_child_items respond item.nme=#{item.name_sym} recursive=#{recursive}"
+
+        list.each do |const_name|
+          obj2 = item.ruby_obj.const_get(const_name)
+          level2 = item.level + 1
+          item2 = Item.new(const_name, obj2, item, level2)
+          #
+          #@objs[obj2] = obj2
+          #
+          const_name_str = Util.sym_to_name(const_name)
+          #@item_by_name[item2.name_str] = item2
+          #@item_by_sym[item2.name_sym] = item2
+          #@name_by_item[item2] = item2.name_str
+
+          analyze_sub(item2, true)
+        end
       else
-        p "show_class_related_info not respond_to? :ancestors #{obj.class}"
+#        Util.debug_pp "analyze_child_items not_respond item.nme=#{item.name_sym}"
+        @result.not_respond_to_list.add(item)
+        #adjust_item(item, :not_respond_to)
+        @output_yaml[:not_respond_to][item.name_sym] = item.dump_in_hash
       end
     end
 
-    def show0( level , parent_item , list )
-      list.each do |x|
-        obj = parent_item.obj.const_get( x )
-        case obj.class
-        when Class
-          if @target_class_list.include?( obj.to_s )
-            unless @exclude_class_list.include?( obj.to_s )
-							item = Item.new( obj , parent_item , level )
-#              show_class_related_info( level , obj )
-						else
-							# p "show0 found but excluded #{obj.to_s} in @target_class_list "
-            end
+    def analyze_sub(item, recursive = false)
+#      Util.debug("analyze_sub A item.kind=#{item.kind} item.target?=#{item.target}")
+      case item.kind
+      when :class
+        if @files.target_class_list.include?(item.name_sym)
+          item.target_on
+#          Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
+          @result.class_list.add(item)
+          item.set_adjust_type(:class)
+          # @output_yaml[:class][item.name_sym] = item.dump_in_hash
+#          Util.debug "analyze_sub item.name_sym=#{item.name_sym} recursive=#{recursive}"
+          analyze_child_items(item, item.ruby_obj.constants, recursive) if item.adjust_result_nil_or_0?
+        else
+          if @files.exclude_class_list.include?(item.name_sym)
+            @result.exclude_class_list.add(item)
+            @not_item_adjust_result[:exclude_class][item.name_sym] = {:item => item}
+            item.set_adjust_type(:exclude_class)
+          elsif @files.exclude_const_list.include?(item.name_sym)
+            @result.exclude_const_list.add(item)
+            @not_item_adjust_result[:exclude_const][item.name_sym] = {:item => item}
+            item.set_adjust_type(:exclude_const)
           else
-						puts "x=#{x} | obj=#{obj}|"
-						puts "x=#{x} | obj.to_s=#{obj.to_s}|"
-            unless @exclude_class_list.include?( obj.to_s )
-							#puts "@exclude_const_list=#{@exclude_const_list}"
-							unless @exclude_const_list.include?( x )
-								#puts @exclude_const_list.include?( x )
-								#puts x
-								#puts x.class
-#								puts @exclude_const_list
-#								@exclude_const_list.map{|x| puts x.class }
-								item = Item.new( obj , parent_item , level )
-#              show_class_related_info( level , obj )
-							else
-								#p "show0 A not found and not excluded and not excluded const| #{obj.to_s} in @target_class_list "
-							end
-						else
-							#p "show0 B not found and not excluded| #{obj.to_s} in @target_class_list "
-            end
+            @result.unknown_class_list.add(item)
+            #adjust_item(item, :unknown_class)
+            #@output_yaml[:unknown_class][item.name_sym] = item.dump_in_hash
+            item.set_adjust_type(:unknown_class)
           end
-        else
-          #p "0 ELSE"
-          #
         end
-      end
-    end
-
-    def indent( level )
-        "#{' ' * level}"
-    end
-
-    def show1( level , klass , list )
-      list.each do |x|
-        obj = klass.const_get( x )
-        case obj.class
-        when Class
-          unless @exclude_class_list.include?( obj.to_s )
-            if obj.respond_to?(:ancestors)
-              show_class_related_info( level , obj )
-              show2( level + 1 , obj )
-            else
-              p "show1 not respond_to? :ancestors #{obj.class}"
-            end
+      when :module
+        if @files.target_module_list.include?(item.name_sym)
+ #         Util.debug_pp "target :module #{item.name_sym}"
+ #         Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
+          item.target_on
+          @result.module_list.add(item)
+          item.set_adjust_type(:module)
+          # @output_yaml[:module][item.name_sym] = item.dump_in_hash
+          analyze_child_items(item, item.ruby_obj.constants, recursive)  if item.adjust_result_nil_or_0?
+        else
+          if @files.exclude_module_list.include?(item.name_sym)
+            # Util.debug_pp "exclude :module #{item.name_sym}"
+            @result.exclude_module_list.add(item)
+            @not_item_adjust_result[:exclude_module][item.name_sym] = {:item => item}
+            item.set_adjust_type(:exclude_module)
+          else
+#            Util.debug_pp "unkown :module #{item.name_sym}"
+            @result.unknown_module_list.add(item)
+            #adjust_item(item, :unknown_module)
+            #@output_yaml[:unknown_module][item.name_sym] = item.dump_in_hash
+            item.set_adjust_type(:unknown_module)
           end
+        end
+      else
+        if @files.exclude_instance_list.include?(item.name_sym)
+          @result.exclude_instance_list.add(item)
+          @not_item_adjust_result[:exclude_instance][item.name_sym] = {:item => item}
+          item.set_adjust_type(:exclude_instance)
         else
-          p "1 ELSE"
-          #
+          item.target_on
+#          Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
+          @result.instance_list.add(item)
+          #adjust_item(item, :instance)
+          # <@output_yaml[:instance][item.name_sym] = item.dump_in_hash
+          item.set_adjust_type(:instance)
         end
-      end
-    end
-
-    def show2( level , item )
-      if item.respond_to?( :constants )
-        show1(level , item, item.constants)
-      else
-        p "show2 not responde_to?(:constants) #{klass.class}"
-      end
-    end
-
-    def print_instance_methods( level, item )
-      if item.instance_methods.size > 0
-        item.instance_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_public_instance_methods( level, item )
-      if item.public_instance_methods.size > 0
-        item.public_instance_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_private_instance_methods( level, item )
-      if item.private_instance_methods.size > 0
-        item.private_instance_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-          puts "#{indent(level)} []"
-      end
-    end
-
-    def print_protected_instance_methods( level, item )
-      if item.protected_instance_methods.size > 0
-        item.protected_instance_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_public_instance_methods_in_user_defined_class( level, item )
-      if item.public_instance_methods.size > 0
-        item.public_instance_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-          puts "#{indent(level)} []"
-      end
-    end
-
-    def print_private_instance_methods_in_user_defined_class( level, item )
-      if item.private_instance_methods.size > 0
-        item.private_instance_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_protected_instance_methods_in_user_defined_class( level, item )
-      if item.protected_instance_methods.size > 0
-        item.protected_instance_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_class_methods( level, item )
-      if item.singleton_methods.size > 0
-        item.singleton_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_class_methods_in_user_defined_class( level, item )
-      if item.singleton_methods.size > 0
-        item.singleton_methods.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_class_variables( level, item )
-      if item.class_variables.size > 0
-        item.class_variables.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
-      end
-    end
-
-    def print_instance_variables( level, item )
-      if item.instance_variables.size > 0
-        item.instance_variables.each do |x|
-          puts "#{indent(level)} #{x.to_s}"
-        end
-      else
-        puts "#{indent(level)} []"
       end
     end
   end

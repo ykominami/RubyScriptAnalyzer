@@ -2,13 +2,15 @@ require 'RubyAnalyzer/reflection/hierspace'
 
 module RubyAnalyzer
   class Ns < HierSpace
-    def add( parent ,  child )
+    def add( parent , child_name )
       if parent
-        key = [parent.ns_key , child.ns_key].join('/')
+        key = [parent.ns_key , child_name].join('/')
       else
-        key = ["" , child.ns_key].join('/')
+        key = "/"
       end
-      @hs[key] = child
+      @hs[key] = child_name
+
+      key
     end
   end
 end

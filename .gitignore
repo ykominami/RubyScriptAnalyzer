@@ -10,10 +10,8 @@
 /vendor/
 # rspec failure tracking
 .rspec_status
-<<<<<<< HEAD
 /ra.bfg-report/
-||||||| parent of 3a39872... igore test directory
-=======
 #
-ra.bfg-report
->>>>>>> 3a39872... igore test directory
+a.rb
+*0.rb
+
