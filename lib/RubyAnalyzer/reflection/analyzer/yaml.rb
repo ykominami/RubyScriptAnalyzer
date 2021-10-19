@@ -27,7 +27,6 @@ module RubyAnalyzer
 			return unless item.target?
 #			Util.debug "prepare_yaml_item B item.name_sym=#{item.name_sym}"
 
-
 			case item.kind
 			when :class , :module
 #				Util.debug "prepare_yaml_item C item.kind=#{item.kind}"

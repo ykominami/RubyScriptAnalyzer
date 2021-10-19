@@ -2,6 +2,12 @@ module RubyAnalyzer
   class Iteminfo
 		attr_accessor :src, :dest, :processd
 
+		def -(other_iteminfo)
+			@item_names.flatten.select{ |x| x != :superclass }.each{ |key|
+				@dest[key] = @src[key] - other_iteminfo.src[key]
+			}
+		end
+
 		def initialize(ruby_obj, kind, target, name)
 			@ruby_obj = ruby_obj
 			@kind = kind
@@ -38,14 +44,12 @@ module RubyAnalyzer
 	#			:singleton_methods, :singleton_methods_in_user_defined_class,
 			]
 			@vars = {}
-#			@vars[:class] = @item_names_for_class_only + @item_names
-#			@vars[:module] = @item_names_for_module_only + @item_names
 			@vars[:class] = @item_names
 			@vars[:module] = @item_names
 		end
 
 		def adjust(&block)
-			@vars[@kind].map{|key|
+			@vars[@kind].map{ |key|
 				if key.class == Array
 					block.call(key[0], @src, @dest, @ruby_obj, @kind, @target, @adjust_type, true)
 					block.call(key[1], @src, @dest, @ruby_obj, @kind, @target, @adjust_type, false)

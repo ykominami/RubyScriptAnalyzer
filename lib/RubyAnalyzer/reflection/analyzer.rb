@@ -67,7 +67,6 @@ module RubyAnalyzer
         item
       }
       #
-      #
       analyze_child_items(object_item, @diff_const)
       #
       #dump_analyze_result
@@ -84,7 +83,6 @@ module RubyAnalyzer
     def analyze_child_items(item, list, recursive = false)
       if item.respond_to?(:const_get)
 #        Util.debug_pp "analyze_child_items respond item.nme=#{item.name_sym} recursive=#{recursive}"
-
         list.each do |const_name|
           obj2 = item.ruby_obj.const_get(const_name)
           level2 = item.level + 1

@@ -175,6 +175,9 @@ module RubyAnalyzer
   end
 
   class Itemobj < Item
+#    attr_reader :name_sym, :name_str, :items, :ruby_obj, :level, :kind, :target, :adjust_type, :parent,:ns_key
+# 	 attr_accessor :iteminfo
+
     @ns = Ns.new
     @adjust = {}
 #    @@varnames = Setx.new
@@ -182,12 +185,15 @@ module RubyAnalyzer
 
     @item_by_str = Hashx.new
     @item_by_sym = Hashx.new
+
+#    def initialize( name_sym, ruby_obj , parent , level )
+#      super( name_sym, ruby_obj , parent , level )
+#    end
   end
 
   class Itemdiff < Item
-    def self.get_varnames
-      @@varnames
-    end
+    attr_reader :name_sym, :name_str, :items, :ruby_obj, :level, :kind, :target, :adjust_type, :parent,:ns_key
+		attr_accessor :iteminfo
 
     def initialize(init_item, now_item)
       @name_sym = init_item.name_sym
@@ -195,10 +201,7 @@ module RubyAnalyzer
       @level = init_item.level
       @kind = init_item.kind
 
-      self.class.get_varnames.map{ |sym|
-        #Util.debug "sym=#{sym} | #{sym.class}"
-        instance_variable_set(sym, now_item.instance_variable_get(sym) - init_item.instance_variable_get(sym))
-      }
+      now_item.iteminfo -= init_item.iteminfo
     end
   end
 end
