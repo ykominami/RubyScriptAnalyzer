@@ -10,14 +10,13 @@ module RubyAnalyzer
 			list.map{|objx| sort_list_t!(objx)}
 		end
 
-		def sort_list!(objx)
+		def sort_list!(hs, key)
 #			p "sort_list objx=#{objx}"
-			new_x = self.instance_variable_get(objx).sort{|a,b| a <=> b}
-			self.instance_variable_set(objx , new_x)
+			hs[key] = hs[key].sort{|a,b| a <=> b}
 		end
 
-		def sort_lists!(list)
-			list.map{|objx| sort_list!(objx)}
+		def sort_lists!(hs)
+			hs.keys.map{|key| sort_list!(hs, key)}
 		end
 
 		def print_list_t(objx)
@@ -31,14 +30,14 @@ module RubyAnalyzer
 			}
 		end
 
-		def print_list(objx)
-			self.instance_variable_get(objx).map { |x| puts "  #{x}" }
+		def print_list(list)
+			list.map { |x| puts "  #{x}" }
 		end
 
-		def print_lists(list)
-			list.map{|x|
+		def print_lists(hs)
+			hs.map{|x|
 				# puts "## #{x}"
-				print_list(x)
+				print_list(x[1])
 			}
 		end
 	end
