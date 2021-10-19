@@ -14,15 +14,9 @@ module RubyAnalyzer
     attr_reader :init_consts, :init_items
 
     def initialize(output_filepath, analyzerfiles, fname , fname2 = nil)
-      Util.level = Logger::DEBUG
+      Util.level = Logger::WARN
+      #Util.level = Logger::DEBUG
       #Util.level = Logger::FATAL
-      #@data_op_flag = :one
-      #@data_op_flag = :two
-      @data_op_flag = :all
-      #
-      #@data_op_level = :one
-      @data_op_level = :all
-      #
       @output_filepath = output_filepath
       @files = analyzerfiles
       @init_consts = Module.constants
@@ -63,9 +57,15 @@ module RubyAnalyzer
     def analyze
 #      Util.debug "called analyze"
       level = 0
-      object_item = Item.new(:Object, Object, nil, level)
-      object_item.set_adjust_type(:Object)
-      object_item.set_adjust_result(:Object, 0)
+      object_item, standarderror_item = [
+        [Object, :Object], 
+        [StandardError, :StandardError]
+      ].map{ |klass, name|
+        item = Item.new(name, klass, nil, level)
+        item.set_adjust_type(name)
+        item.set_adjust_result(name, 0)
+        item
+      }
       #
       #
       analyze_child_items(object_item, @diff_const)

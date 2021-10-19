@@ -7,28 +7,18 @@ module RubyAnalyzer
     end
 
     def prepare_yaml_dump(item)
+#			Util.debug "# prepare_yaml_dump"
       prepare_yaml_child_items(item)
     end
 
     def prepare_yaml_child_items(item)
 #      Util.debug "prepare_yaml_child_items item.nme=#{item.name_sym}"
 #	 		Util.debug "@data_op_flag=#{@data_op_flag}"
-			list = []
-      case @data_op_flag
-      when :one
-				list = item.items[0..1].to_a
-      when :two
-				list = item.items[0..2].to_a
-      else
-        list = item.items
-      end
-			list.each do |child_item|
+#			Util.debug "# prepare_yaml_dump"
+				item.items.each do |child_item|
 #				Util.debug "prepare_yaml_child_items 1 child_item.name_sym=#{child_item.name_sym}"
 				prepare_yaml_item(child_item)
-				if @data_op_level == :all
-#					Util.debug "prepare_yaml_child_items 2 child_item.name_sym=#{child_item.name_sym} @data_op_level=#{@data_op_level}"
-					prepare_yaml_child_items(child_item)
-				end
+				prepare_yaml_child_items(child_item)
 			end
 		end
 
@@ -40,7 +30,9 @@ module RubyAnalyzer
 
 			case item.kind
 			when :class , :module
+#				Util.debug "prepare_yaml_item C item.kind=#{item.kind}"
       	@output_yaml[item.kind][item.name_sym] = item.dump_in_hash
+#				Util.debug "prepare_yaml_item C output=#{@output_yaml[item.kind][item.name_sym]}"
 			else
 				# do nothing
 			end
