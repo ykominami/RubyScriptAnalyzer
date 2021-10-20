@@ -3,54 +3,43 @@ require "RubyAnalyzer/utilmod2"
 module RubyAnalyzer
 	class Analyzer
 		class AnalyzerFiles
+			attr_accessor :analyzerfile
+
       include Utilmod2
 
-			def target_class_list
-				@hs["target_class_list"]
-			end
+			@names = [
+				:target_class_list,
+				:target_module_list,
+				:target_instance_list,
+				:exclude_class_list,
+				:exclude_module_list,
+				:exclude_instance_list,
+				:exclude_const_list,
+			]
+			@analyzerfile_ = Struct.new("AnalyzerFilesx", *@names.map{|x| x})
 
-			def target_module_list
-				@hs["target_module_list"]
-			end
-
-			def target_instance_list
-				@hs["target_instance_list"]
-			end
-
-			def exclude_class_list
-				@hs["exclude_class_list"]
-			end
-
-			def exclude_module_list
-				@hs["exclude_module_list"]
-			end
-
-			def exclude_instance_list
-				@hs["exclude_instance_list"]
-			end
-
-			def exclude_const_list
-				@hs["exclude_const_list"]
+			def self.get_analyzerfile
+				@analyzerfile_
 			end
 
 			def initialize(target_classname_fname, target_modulename_fname, target_instancename_fname,
 										exclude_classname_fname, exclude_modulename_fname, exclude_instancename_fname,
 										exclude_constname_fname)
-				@hs = {}
 				@names = [
-					["target_class_list", target_classname_fname],
-					["target_module_list", target_modulename_fname],
-					["target_instance_list", target_instancename_fname],
-					["exclude_class_list", exclude_classname_fname],
-					["exclude_module_list", exclude_modulename_fname],
-					["exclude_instance_list", exclude_instancename_fname],
-					["exclude_const_list", exclude_constname_fname]
+					[:target_class_list, target_classname_fname],
+					[:target_module_list, target_modulename_fname],
+					[:target_instance_list, target_instancename_fname],
+					[:exclude_class_list, exclude_classname_fname],
+					[:exclude_module_list, exclude_modulename_fname],
+					[:exclude_instance_list, exclude_instancename_fname],
+					[:exclude_const_list, exclude_constname_fname]
 				]
-				@names.map{ |list_key, fname|
-					list = File.readlines(fname)
+				@analyzerfile = self.class.get_analyzerfile.new(*@names.map{|x| x[1]})
+				@analyzerfile.members.map{ |list_key|
+					list = File.readlines(@analyzerfile[list_key])
 					list2 = list.map { |l| l.split("#").first }
 					lines = Util.remove_empty_line(list2).map { |x| x.to_sym }
-					@hs[list_key] = lines
+					@analyzerfile[list_key] = lines
 				}
 			end
 

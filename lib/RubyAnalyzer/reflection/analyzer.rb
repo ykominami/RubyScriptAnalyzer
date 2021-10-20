@@ -51,7 +51,8 @@ module RubyAnalyzer
                             ].reduce({}) {|h, k| h[k] = {}; h}
       @not_item_adjust_result = [:exclude_class, :exclude_const, :exclude_module, :exclude_instance,
                             ].reduce({}) {|h, k| h[k] = {}; h}
-      @result = AnalyzerResult.new
+#      @result = AnalyzerResult.new
+      @result = self.class.create_AnalyzerResult
     end
 
     def analyze

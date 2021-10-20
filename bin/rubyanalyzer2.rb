@@ -8,7 +8,7 @@ def analyzer_setup(target_classname_fname, target_modulename_fname, target_insta
                     exclude_constname_fname)
   RubyAnalyzer::Analyzer::AnalyzerFiles.new(target_classname_fname, target_modulename_fname, target_instancename_fname,
                     exclude_classname_fname, exclude_modulename_fname, exclude_instancename_fname, 
-                    exclude_constname_fname)
+                    exclude_constname_fname).analyzerfile
 end
 
 def analyzer_analyze(output_filepath, analyzerfiles, fname , fname2)
