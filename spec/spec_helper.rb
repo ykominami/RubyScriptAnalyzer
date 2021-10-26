@@ -2,7 +2,7 @@
 
 require 'pathname'
 require 'bundler/setup'
-require 'rubyscriptanalyzer2'
+require 'Rubyscriptanalyzer2'
 
 
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)

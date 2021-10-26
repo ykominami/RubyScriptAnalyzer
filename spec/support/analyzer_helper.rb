@@ -1,4 +1,4 @@
-require "rubyscriptanalyzer2.rb"
+require "Rubyscriptanalyzer2.rb"
 require 'pathname'
 
 module AnalyzerHelper
