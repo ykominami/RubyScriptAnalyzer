@@ -10,17 +10,10 @@ require 'benchmark'
 #require 'env'
 require 'pry'
 
-require 'RubyAnalyzer/util'
-require 'RubyAnalyzer/hierspace'
-require 'RubyAnalyzer/item'
-require 'RubyAnalyzer/ns'
-require 'RubyAnalyzer/analyzer'
-require 'RubyAnalyzer/ast'
+require "bundler/setup"
+require "Rubyscriptanalyzer.rb"
 
-require 'RubyAnalyzer/env_test'
-require 'RubyAnalyzer/rubyanalyzer_test'
-
-module RubyAnalyzer  
+module RubyScriptAnalyzer
   class App
     def initialize()
       #Util.level = Logger::Severity::DEBUG

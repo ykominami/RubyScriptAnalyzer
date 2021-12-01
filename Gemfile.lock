@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    RubyAnalyzer (0.1.0)
+    RubyScriptAnalyzer (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -119,7 +119,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  RubyAnalyzer!
+  RubyScriptAnalyzer!
   aruba
   bundler (~> 2.0)
   byebug
@@ -128,7 +128,7 @@ DEPENDENCIES
   pry-byebug
   pry-doc
   pry-stack_explorer
-  rake (>= 12.3.3)
+  rake (>= 13.0.6)
   rb-readline
   rspec (~> 3.0)
   rubocop

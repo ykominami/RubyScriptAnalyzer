@@ -1,0 +1,5 @@
+require_relative './reflection/hierspace'
+require_relative './reflection/inheritancespace'
+require_relative './reflection/ns'
+require_relative './reflection/item'
+require_relative './reflection/analyzer'

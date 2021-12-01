@@ -12,7 +12,7 @@ RSpec.describe 'command-line', type: :aruba do
 			rb2.rb r-a.rb!
 		parent_pn = Pathname.new(__dir__).parent
 		test_data_pn = parent_pn.join("test2")
-		cmd_pn = parent_pn.join("bin", "rubyscriptanalyzer2.rb")
+		cmd_pn = parent_pn.join("bin", "rsaref.rb")
 		@cmd = %!#{cmd_pn} #{test_setup(test_data_pn, filenames).join(" ")}!
 	}
 
