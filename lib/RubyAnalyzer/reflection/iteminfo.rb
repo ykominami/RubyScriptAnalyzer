@@ -96,11 +96,11 @@ module RubyAnalyzer
 				@dest[key] = @src[key].map(&:to_s)
 			when :superclass
 				@src[key] = get_superclass
-				Util.debug %Q!>>>>>>>>>> A #{@src[key].class} Iteminfo setup_special_item item.name=#{@name} @src[#{key}]=#{@src[key]}!
+				Util.debug(%Q!>>>>>>>>>> A #{@src[key].class} Iteminfo setup_special_item item.name=#{@name} @src[#{key}]=#{@src[key]}!)
 				if @src[key].class != Class
 					list = @src[:ancestors] - @src[:included_modules]
 					@src[key] = list[1]
-					Util.debug %Q!>>>>>>>>>> B Iteminfo setup_special_item item.name=#{@name} @src[#{key}]=#{@src[key]}!
+					Util.debug(%Q!>>>>>>>>>> B Iteminfo setup_special_item item.name=#{@name} @src[#{key}]=#{@src[key]}!)
 				end
 			end
 		end
@@ -111,30 +111,30 @@ module RubyAnalyzer
 			#end
 
 			case key
-      when :class_variables
+   when :class_variables
 				@src[key] = get_class_variables
 			when :class_methods
 				@src[key] = get_class_methods
-				Util.debug "get_class_methods=nil @name=#{@name}" if src[key] == nil
-      when :class_methods_in_user_defined_class
+				Util.debug("get_class_methods=nil @name=#{@name}") if src[key] == nil
+   when :class_methods_in_user_defined_class
 				@src[key] = get_class_methods_in_user_defined_class
 			when :constants
 				@src[key] = get_constants
 			when :constants_in_user_defined_class
 				@src[key] = get_constants_in_user_defined_class
-      when :instance_methods
+   when :instance_methods
 				@src[key] = get_instance_methods
-      when :instance_methods_in_user_defined_class
+   when :instance_methods_in_user_defined_class
 				@src[key] = get_instance_methods_in_user_defined_class
-      when :instance_variables
+   when :instance_variables
 				@src[key] = get_instance_variables
 			when :private_instance_methods
 				@src[key] = get_private_instance_methods
 			when :private_instance_methods_in_user_defined_class
 				@src[key] = get_private_instance_methods_in_user_defined_class
-      when :protected_instance_methods
+   when :protected_instance_methods
 				@src[key] = get_protected_instance_methods
-      when :protected_instance_methods_in_user_defined_class
+   when :protected_instance_methods_in_user_defined_class
 				@src[key] = get_protected_instance_methods_in_user_defined_class
 			when :public_instance_methods
 				@src[key] = get_public_instance_methods
@@ -161,7 +161,7 @@ module RubyAnalyzer
 			else
 				#
 			end
-			Util.debug "Iteminfo#setup_item key=#{key} @name=#{@name} kind=#{@kind} target=#{@target} @src[#{key}]=nil" unless @src[key]
+			Util.debug("Iteminfo#setup_item key=#{key} @name=#{@name} kind=#{@kind} target=#{@target} @src[#{key}]=nil") unless @src[key]
     end
 		###################
 		def get_ancestors

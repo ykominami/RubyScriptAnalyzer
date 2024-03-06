@@ -102,5 +102,5 @@ module RubyAnalyzer
     'YIELD' => 'RubyAnalyzer::Ast::Yield_item',
     'ZARRAY' => 'RubyAnalyzer::Ast::Zarray',
     'ZSUPER' => 'RubyAnalyzer::Ast::Zsuper_item',
-}
+  }
 end

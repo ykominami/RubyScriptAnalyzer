@@ -64,7 +64,7 @@ module RubyAnalyzer
       Util.debug( "=== root class_related_info :WITHOUT_OPEN_CLASS" )
       RubyAnalyzer::Item.show_class_related_info( RubyAnalyzer::Item.get_root.obj , :WITHOUT_OPEN_CLASS)
       Util.debug( "=== root " )
-      Util.debug  RubyAnalyzer::Item.get_root
+      Util.debug( RubyAnalyzer::Item.get_root)
       Util.debug( "=== Object " )
     end
   end

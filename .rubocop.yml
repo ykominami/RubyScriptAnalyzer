@@ -1,6 +1,8 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
+  NewCops: enable
+
   TargetRubyVersion: 2.3
   DisplayCopNames: true
 #
@@ -37,7 +39,7 @@ Lint/UnderscorePrefixedVariableName:
 Lint/UnusedMethodArgument:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Enabled: false
 Metrics/ClassLength:
   Exclude:
@@ -49,7 +51,7 @@ Metrics/MethodLength:
 
 Naming/FileName:
   Enabled: false
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames:
     - z
 
@@ -79,11 +81,9 @@ Style/WordArray:
   Enabled: false
 Style/BarePercentLiterals:
   EnforcedStyle: percent_q
-Style/BracesAroundHashParameters:
-  Enabled: false
 Style/PercentQLiterals:
   Enabled: false
-Style/UnneededPercentQ:
+Style/RedundantPercentQ:
   Enabled: false
 Style/IfUnlessModifier:
   Enabled: false
@@ -111,7 +111,7 @@ Style/MethodCallWithArgsParentheses:
     - "Rakefile"
     - "Gemfile"
   Enabled: true
-  IgnoredMethods:
+  AllowedMethods:
     - p
     - pp
     - puts

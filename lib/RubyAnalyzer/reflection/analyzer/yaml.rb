@@ -19,7 +19,7 @@ module RubyAnalyzer
 #				Util.debug "prepare_yaml_child_items 1 child_item.name_sym=#{child_item.name_sym}"
 				prepare_yaml_item(child_item)
 				prepare_yaml_child_items(child_item)
-			end
+			 end
 		end
 
     def prepare_yaml_item(item)

@@ -21,8 +21,8 @@ module RubyAnalyzer
 
     def adjust_item_for_class(item, adjust_type)
       superclass = item.src[:superclass]
-      Util.debug %Q!superclass=#{superclass}!
-      Util.debug %Q!superclass.superclass=#{superclass.superclass}!
+      Util.debug(%Q!superclass=#{superclass}!)
+      Util.debug(%Q!superclass.superclass=#{superclass.superclass}!)
 
       ancestor_item = Item.get_in_item_by_ruby_obj(superclass)
       unless ancestor_item
@@ -30,8 +30,8 @@ module RubyAnalyzer
         ancestor_item = Item.new(superclass.to_s.to_sym, superclass, parent_item, 0)
       end
       unless ancestor_item
-        Util.debug "unless 3 ancestor_item=nil"
-        Util.debug ""
+        Util.debug("unless 3 ancestor_item=nil")
+        Util.debug("")
         item.set_adjust_result_error(3)
         item.set_adjust_result(adjust_type, 3)
         raise
@@ -45,12 +45,12 @@ module RubyAnalyzer
 					#Util.debug %Q!#{item.name_str} kind=#{kind} key=#{key}!
 					list = ancestor_item.iteminfo.src[key]
 					unless list
-						Util.debug "============== #{item.name_str} key=#{key} kind=#{kind} list=nil processd=#{item.iteminfo.processd}"
+						Util.debug("============== #{item.name_str} key=#{key} kind=#{kind} list=nil processd=#{item.iteminfo.processd}")
 						list = []
 					end
 					#Util.debug %Q!list=#{list}!
 					unless src[key]
-						Util.debug "############## src[#{key}]==nil #{item.name_str} key=#{key} kind=#{kind} list=nil processd=#{item.iteminfo.processd}"
+						Util.debug("############## src[#{key}]==nil #{item.name_str} key=#{key} kind=#{kind} list=nil processd=#{item.iteminfo.processd}")
 						src[key] = [] unless src[key]
 					end
 					if key == :ancestors

@@ -162,15 +162,15 @@ module RubyAnalyzer
     end
 
     def show_dump_in_hash
-      @hs.map{|x| Util.debug "#{x[0]}=#{x[1]}"}
+      @hs.map{|x| Util.debug("#{x[0]}=#{x[1]}")}
     end
 
     def <=>(other)
       @name <=> other.name
     end
 
-		def adjust(&block)
-			@iteminfo.adjust(&block)
+		def adjust(&)
+			@iteminfo.adjust(&)
 		end
   end
 

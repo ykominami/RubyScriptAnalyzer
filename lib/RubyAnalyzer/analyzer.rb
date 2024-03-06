@@ -99,19 +99,17 @@ module RubyAnalyzer
       when Class
         class_name = obj.class.to_s
         unless @exclude_class_list.include?( class_name )
-          if class_name !~ /^#<Class:/
-            if obj.respond_to?(:ancestors)
-              Util.debug( "analyze1_sub == a" )
-              item = Item.new( obj , parent_item , level )
-              parent_item.add_ns_child( item )
-              Analyzer.push_to_ns( item )
-              analyze2( level + 1 , item )
-              Analyzer.pop_from_ns
-            else
-              Util.debug( "@not_respond_to_ancestors_constants=#{@not_respond_to_ancestors_constants}" )
-              parent_item.add_not_respond_to_ancesstors_constant( obj.to_s )
-            end
+          if class_name =~ /^#<Class:/
+            parent_item.add_not_respond_to_ancesstors_constant( obj.to_s )
+          elsif obj.respond_to?(:ancestors)
+            Util.debug( "analyze1_sub == a" )
+            item = Item.new( obj , parent_item , level )
+            parent_item.add_ns_child( item )
+            Analyzer.push_to_ns( item )
+            analyze2( level + 1 , item )
+            Analyzer.pop_from_ns
           else
+            Util.debug( "@not_respond_to_ancestors_constants=#{@not_respond_to_ancestors_constants}" )
             parent_item.add_not_respond_to_ancesstors_constant( obj.to_s )
           end
         else

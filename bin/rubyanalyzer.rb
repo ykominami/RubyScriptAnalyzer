@@ -72,9 +72,9 @@ module RubyAnalyzer
     :storefile => "/tmp/store.store",
   }
 
-  conf_file = ENV['RUBYANALYZER_CONF']
+  conf_file = ENV.fetch('RUBYANALYZER_CONF', nil)
   unless conf_file
-    conf_file = File.join(ENV['HOME'], "rubyanalyzer.conf")
+    conf_file = File.join(ENV.fetch('HOME', nil), "rubyanalyzer.conf")
   end
 
   @conf = YAML.load_file(conf_file)
@@ -112,7 +112,7 @@ module RubyAnalyzer
     end
   end
 =end
-#  p "ARGV=#{ARGV}"
+  #  p "ARGV=#{ARGV}"
 
   results = []
   app = nil
@@ -122,7 +122,7 @@ module RubyAnalyzer
   store_file = opts[:storefile]
   restore_flag = opts[:restore]
   
-#  LOAD_STORE_FILE = false
+  #  LOAD_STORE_FILE = false
 
   ret = Benchmark.measure {
     app = App.new
@@ -196,7 +196,7 @@ module RubyAnalyzer
     app.show_item_list( gasgn_hs )
   }
   results << ["show_item_list" , ret]
-#  app.testx
+  #  app.testx
 
   # show all result
   results.each do |ary|

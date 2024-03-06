@@ -34,13 +34,13 @@ module RubyAnalyzer
 			@hs.add(item) if enable?
 		end
 
-		def sort(&block)
+		def sort(&)
 			#			@hs.keys.sort(&block)
-			@hs.to_a.sort(&block)
+			@hs.to_a.sort(&)
 		end
 
-		def map(&block)
-			@hs.to_a.map(&block)
+		def map(&)
+			@hs.to_a.map(&)
 		end
 	end
 end

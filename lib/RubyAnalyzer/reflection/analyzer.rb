@@ -45,9 +45,9 @@ module RubyAnalyzer
                       :not_respond_to,
                     ].reduce({}) {|h, k| h[k] = {}; h}
       @item_adjust_result = [:class, :module, :instance,
-                              :unknown_class, :unknown_module, :unknown_instance,
-                              :not_respond_to,
-                              :exclude_class, :exclude_module, :exclude_instance, :exclude_const,
+                             :unknown_class, :unknown_module, :unknown_instance,
+                             :not_respond_to,
+                             :exclude_class, :exclude_module, :exclude_instance, :exclude_const,
                             ].reduce({}) {|h, k| h[k] = {}; h}
       @not_item_adjust_result = [:exclude_class, :exclude_const, :exclude_module, :exclude_instance,
                             ].reduce({}) {|h, k| h[k] = {}; h}
