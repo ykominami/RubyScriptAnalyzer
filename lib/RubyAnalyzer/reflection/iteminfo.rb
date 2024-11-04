@@ -41,7 +41,7 @@ module RubyAnalyzer
 				[:private_methods, :private_methods_in_user_defined_class],
 				[:protected_methods, :protected_methods_in_user_defined_class],
 				[:public_methods, :public_methods_in_user_defined_class],
-	#			:singleton_methods, :singleton_methods_in_user_defined_class,
+	    #			:singleton_methods, :singleton_methods_in_user_defined_class,
 			]
 			@vars = {}
 			@vars[:class] = @item_names
@@ -159,7 +159,7 @@ module RubyAnalyzer
 				@src[key] = get_public_methods_in_user_defined_class
 
 			else
-				#
+				 #
 			end
 			Util.debug("Iteminfo#setup_item key=#{key} @name=#{@name} kind=#{@kind} target=#{@target} @src[#{key}]=nil") unless @src[key]
     end

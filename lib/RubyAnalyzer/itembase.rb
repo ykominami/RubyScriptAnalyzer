@@ -197,7 +197,7 @@ module RubyAnalyzer
         raise unless klass_index
         array = @@cv.target_class[ klass_index ]
         unless array
-#          raise
+        #          raise
         else
           if array.size == 1
             inst = array[0]

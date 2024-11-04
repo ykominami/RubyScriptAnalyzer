@@ -4,8 +4,8 @@ module RubyAnalyzer
   class Varnametable
     extend Forwardable
     def_delegators(:@table, :reduce, :each)
-#    def_delegator(:@table, :reduce, :reduce)
-#    def_delegator(:@table, :each, :each)
+  #    def_delegator(:@table, :reduce, :reduce)
+  #    def_delegator(:@table, :each, :each)
 
 		class Tableitem
 			def initialize(name)
@@ -28,7 +28,7 @@ module RubyAnalyzer
 						prefix=":"
 						@src = $1
 					else
-						# do nothing
+						 # do nothing
 					end
 				else
 					@symbol = false

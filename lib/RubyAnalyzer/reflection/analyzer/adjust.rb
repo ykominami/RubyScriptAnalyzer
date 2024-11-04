@@ -66,7 +66,7 @@ module RubyAnalyzer
 							dest[key] = src[key]
 						end
 					end
-					#Util.debug %Q!dest[#{key}]=#{dest[key]}!
+				#Util.debug %Q!dest[#{key}]=#{dest[key]}!
 				when :module
 					list = ancestor_item.iteminfo.src[key]
 					unless list
@@ -78,7 +78,7 @@ module RubyAnalyzer
 						dest[key] = src[key] - list
 					end
 				else
-					#
+					 #
 				end
 			}
 		end

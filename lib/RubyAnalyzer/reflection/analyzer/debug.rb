@@ -24,10 +24,10 @@ module RubyAnalyzer
     def dump_analyze_result
       #      @result.sort_lists_x!
       #      @result.print_lists_x
-#=begin
+      #=begin
       Util.debug_pp("==== class")
       print_all_class_related_info
-#=end
+      #=end
       Util.debug_pp("==== module")
       print_all_module_related_info
 =begin
@@ -99,7 +99,7 @@ module RubyAnalyzer
       Util.debug("#{indent(level)} == constants ==")
       Util.debug("#{indent(level)} #{item.constants_in_user_defined_class}")
       Util.debug("#{indent(level)}  == in hash")
-#      Util.debug "#{indent(level)} #{item.dump_in_hash}
+      #      Util.debug "#{indent(level)} #{item.dump_in_hash}
       item.dump_in_hash
     end
 
@@ -135,8 +135,8 @@ module RubyAnalyzer
         print_class_variables(level, item)
         Util.debug("#{indent(level)} == instance_variables ==")
         print_instance_variables(level, item)
-        #
-#        show2(level + 1, obj)
+      #
+      #        show2(level + 1, obj)
       else
         Util.debug_pp("show_class_related_info not respond_to? :ancestors #{obj.class}")
       end

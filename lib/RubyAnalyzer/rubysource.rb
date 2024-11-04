@@ -5,9 +5,9 @@ require 'RubyAnalyzer/util'
 
 module RubyAnalyzer
   class Rubysource
-#    attr_accessor :assertions
+    #    attr_accessor :assertions
 
-#    include Minitest::Assertions
+    #    include Minitest::Assertions
 
     def initialize( opts )
       self.assertions = 0

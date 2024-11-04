@@ -1,7 +1,7 @@
 module RubyAnalyzer
 	module Utilmod2
 		def sort_list_t!(objx)
-#			p "sort_list_ex objx=#{objx}"
+   #			p "sort_list_ex objx=#{objx}"
 			new_x = self.instance_variable_get(objx.l).sort{|a,b| a.l <=> b.l}
 			self.instance_variable_set(objx.l , new_x)
 		end
@@ -11,7 +11,7 @@ module RubyAnalyzer
 		end
 
 		def sort_list!(hs, key)
-#			p "sort_list objx=#{objx}"
+   #			p "sort_list objx=#{objx}"
 			hs[key] = hs[key].sort{|a,b| a <=> b}
 		end
 

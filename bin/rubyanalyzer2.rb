@@ -13,14 +13,14 @@ end
 
 def analyzer_analyze(output_filepath, analyzerfiles, fname , fname2)
   analyzer = RubyAnalyzer::Analyzer.new(output_filepath, analyzerfiles, fname , fname2)
-#  p analyzer.instance_variables
+  #  p analyzer.instance_variables
   obj = analyzer.init_items[:Object]
-#  p obj.instance_variables
-#  p obj
-#  p obj.instance_variables
-#  p obj.class_variables
+  #  p obj.instance_variables
+  #  p obj
+  #  p obj.instance_variables
+  #  p obj.class_variables
   analyzer.analyze
-#  analyzer.print_all_class_related_info
+  #  analyzer.print_all_class_related_info
 end
 
 if $0 == __FILE__

@@ -55,7 +55,7 @@ module RubyAnalyzer
       @init_lv = local_variables
 
       root = Itemroot.new( Object )
-#     check_exclude_klass
+      #     check_exclude_klass
 
       @input_fnames.each do |fname|
         require fname

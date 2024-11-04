@@ -51,12 +51,12 @@ module RubyAnalyzer
                             ].reduce({}) {|h, k| h[k] = {}; h}
       @not_item_adjust_result = [:exclude_class, :exclude_const, :exclude_module, :exclude_instance,
                             ].reduce({}) {|h, k| h[k] = {}; h}
-#      @result = AnalyzerResult.new
+      #      @result = AnalyzerResult.new
       @result = self.class.create_AnalyzerResult
     end
 
     def analyze
-#      Util.debug "called analyze"
+      #      Util.debug "called analyze"
       level = 0
       object_item, standarderror_item = [
         [Object, :Object], 
@@ -83,7 +83,7 @@ module RubyAnalyzer
 
     def analyze_child_items(item, list, recursive = false)
       if item.respond_to?(:const_get)
-#        Util.debug_pp "analyze_child_items respond item.nme=#{item.name_sym} recursive=#{recursive}"
+        #        Util.debug_pp "analyze_child_items respond item.nme=#{item.name_sym} recursive=#{recursive}"
         list.each do |const_name|
           obj2 = item.ruby_obj.const_get(const_name)
           level2 = item.level + 1
@@ -93,23 +93,23 @@ module RubyAnalyzer
           analyze_sub(item2, true)
         end
       else
-#        Util.debug_pp "analyze_child_items not_respond item.nme=#{item.name_sym}"
+        #        Util.debug_pp "analyze_child_items not_respond item.nme=#{item.name_sym}"
         @result.not_respond_to_list.add(item)
         @output_yaml[:not_respond_to][item.name_sym] = item.dump_in_hash
       end
     end
 
     def analyze_sub(item, recursive = false)
-#      Util.debug("analyze_sub A item.kind=#{item.kind} item.target?=#{item.target}")
+      #      Util.debug("analyze_sub A item.kind=#{item.kind} item.target?=#{item.target}")
       case item.kind
       when :class
         if @files.target_class_list.include?(item.name_sym)
           item.target_on
-#          Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
+          #          Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
           @result.class_list.add(item)
           item.set_adjust_type(:class)
           # @output_yaml[:class][item.name_sym] = item.dump_in_hash
-#          Util.debug "analyze_sub item.name_sym=#{item.name_sym} recursive=#{recursive}"
+          #          Util.debug "analyze_sub item.name_sym=#{item.name_sym} recursive=#{recursive}"
           analyze_child_items(item, item.ruby_obj.constants, recursive) if item.adjust_result_nil_or_0?
         else
           if @files.exclude_class_list.include?(item.name_sym)

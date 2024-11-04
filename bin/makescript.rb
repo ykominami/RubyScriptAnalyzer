@@ -1,5 +1,4 @@
 require 'optparse'
-require 'pp'
 require 'RubyAnalyzer/util'
 require 'logger'
 

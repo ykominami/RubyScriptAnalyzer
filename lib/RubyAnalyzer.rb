@@ -9,7 +9,7 @@ module RubyAnalyzer
   require 'RubyAnalyzer/ast_inner.rb'
   require 'RubyAnalyzer/astitem.rb'
   require 'RubyAnalyzer/raenv.rb'
-#  require 'RubyAnalyzer/raenv_test.rb'
+  #  require 'RubyAnalyzer/raenv_test.rb'
   require 'RubyAnalyzer/hierspace.rb'
   require 'RubyAnalyzer/ident.rb'
   require 'RubyAnalyzer/inheritancespace.rb'
@@ -18,7 +18,7 @@ module RubyAnalyzer
   require 'RubyAnalyzer/itemroot.rb'
   require 'RubyAnalyzer/listex.rb'
   require 'RubyAnalyzer/ns.rb'
-#  require 'RubyAnalyzer/rubyanalyzer_test.rb'
+  #  require 'RubyAnalyzer/rubyanalyzer_test.rb'
   require 'RubyAnalyzer/rubysource.rb'
   require 'RubyAnalyzer/util.rb'
 
