@@ -9,15 +9,15 @@ module RubyAnalyzer
         @parent_index = parent_index
         @klass_index = RAEnv.ast_klass_add( self.class )
         @node = node
-#        @node_index = Env.inst_add( node )
+        #        @node_index = Env.inst_add( node )
         @first_column = node.first_column
         @first_lineno = node.first_lineno
         @inspect = node.inspect
         @last_column = node.last_column
         @last_lineno = node.last_lineno
         @type = node.type
-#        @global_ra_id = Ast.get_global_count
-#        @ra_id = Ast.get_count
+        #        @global_ra_id = Ast.get_global_count
+        #        @ra_id = Ast.get_count
         @fpath_index = fpath_index
         #        @name = [node.class.to_s , self.class.get_count].join("-")
         @self_inst_index = RAEnv.ast_inst_add( self )
@@ -29,11 +29,11 @@ module RubyAnalyzer
         @node = nil
       end
 
-      def node_method( )
+      def node_method
         @level = Ast.get_level
         Ast.hier_push( self )
 
-        #Util.debug( "#{Util.indent( @level )}#{@node.type}" )
+        # Util.debug( "#{Util.indent( @level )}#{@node.type}" )
 
         child_process
 
@@ -44,8 +44,8 @@ module RubyAnalyzer
 
       def child_process
         @node.children.each do |x|
-          if x == nil
-            #Util.debug( "#{Util.indent( @level + 1 )}Nil" )
+          if x.nil?
+            # Util.debug( "#{Util.indent( @level + 1 )}Nil" )
           elsif x.instance_of?( Integer )
             @integer_var = x.inspect
           elsif x.instance_of?( Symbol )
@@ -57,13 +57,13 @@ module RubyAnalyzer
           elsif x.instance_of?( Float )
             @float_var = x.inspect
           elsif x.instance_of?( Array )
-            if x.size > 0
+            unless x.empty?
               @variable_array ||= []
               x.each do |y|
                 @variable_array << y
               end
             end
-          elsif x.type != nil
+          elsif !x.type.nil?
             klass = Object.const_get(IDENT_CLASS_NAME[x.type.to_s])
             klass_id = RAEnv.klass_add( klass )
             inst = klass.new(x , @fpath_id, @self_inst_index)
@@ -75,8 +75,8 @@ module RubyAnalyzer
           end
         end
       end
-    end # Astitem
-  end # Ast
-end # module RubyAnalyzer
+    end
+  end
+end
 
 require 'RubyAnalyzer/ast_inner'

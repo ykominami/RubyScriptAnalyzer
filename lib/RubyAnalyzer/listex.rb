@@ -1,4 +1,4 @@
-#require 'enumerable'
+# require 'enumerable'
 
 module RubyAnalyzer
   class Listex
@@ -11,19 +11,18 @@ module RubyAnalyzer
     end
 
     def each(&block)
-      if block
-        0.upto(@count - 1) do |x|
-          block.call( @hash_by_index[x] ) 
-        end
+      return unless block
+      0.upto(@count - 1) do |x|
+        block.call( @hash_by_index[x] )
       end
     end
 
     def at( index )
       @hash_by_index[index]
     end
-    
+
     def index( value )
-      @index_hash[ value ]
+      @index_hash[value]
     end
 
     def add( value )
@@ -41,4 +40,4 @@ module RubyAnalyzer
       @index_hash.size
     end
   end
-end # module RubyAnalyzer
+end

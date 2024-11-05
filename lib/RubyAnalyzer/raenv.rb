@@ -3,29 +3,20 @@ require 'pstore'
 require 'yaml/store'
 require 'pry'
 require 'RubyAnalyzer/listex'
-#require 'RubyAnalyzer/raenv_test'
+# require 'RubyAnalyzer/raenv_test'
 
 module RubyAnalyzer
   class RAEnv
     @@env = {}
-    @@env[:global] = {:fpath => Listex.new }
-    #
+    @@env[:global] = { :fpath => Listex.new }
     @@env[:reflection] = {}
-    #
     @@env[:ast] = {}
-    #
     @@env[:class] = Listex.new
-    #
     @@env[:inst] = Listex.new
-    #
     @@env[:ast_class] = Listex.new
-    #
     @@env[:ast_inst] = Listex.new
-    #
     @@env[:new_env] = {}
-    #
     @@env[:new_env_obj] = Listex.new
-    #
     @@count = {}
     @@count[:global] = 0
     @@count[:reflection] = 0
@@ -44,11 +35,11 @@ module RubyAnalyzer
       end
 
       def register_fpath( fpath )
-        @@env[ :global ][ :fpath ].add( fpath )
+        @@env[:global][:fpath].add( fpath )
       end
 
       def fpath_at( index )
-        @@env[ :global ][ :fpath ].at( index )
+        @@env[:global][:fpath].at( index )
       end
 
       # object
@@ -60,13 +51,13 @@ module RubyAnalyzer
             result = false
           end
         when :inst , :ast_inst
-          if obj.class == Class || obj.class == Module
+          if obj.instance_of?(Class) || obj.instance_of?(Module)
             result = false
           end
         end
         result
       end
-      
+
       def object_index( obj , kind )
         raise unless check_object( obj , kind )
         @@env[kind].index( obj )
@@ -76,18 +67,16 @@ module RubyAnalyzer
         raise unless check_object( obj , kind )
         @@env[kind].add( obj )
       end
-      
+
       def object_at( index , kind )
         obj = @@env[kind]
 
-        if obj.kind_of?( Hash )
+        if obj.is_a?( Hash ) || obj.is_a?( Array )
           obj[index]
-        elsif obj.kind_of?( Array )
-          obj[index]
-        elsif obj.kind_of?( Listex )
-          obj.at(index)
-        elsif obj.kind_of?( RubyAnalyzer::Listex )
-          obj.at(index)
+        # elsif obj.kind_of?( Array )
+        #   obj[index]
+        # elsif obj.kind_of?( Listex ) || obj.kind_of?( RubyAnalyzer::Listex )
+        #  obj.at(index)
         else
           obj.at(index)
         end
@@ -96,7 +85,7 @@ module RubyAnalyzer
       def get_object_hash_size( kind )
         @@env[kind].size
       end
-      
+
       def get_object_hash_keys( kind )
         @@env[kind].keys
       end
@@ -113,7 +102,7 @@ module RubyAnalyzer
       def klass_add( klass )
         object_add( klass , :class )
       end
-      
+
       def klass_at( index )
         object_at( index , :class )
       end
@@ -121,11 +110,11 @@ module RubyAnalyzer
       def get_klass_hash_size
         get_object_hash_size( :class )
       end
-      
+
       def show_klass_hash
         show_object_hash( :class )
       end
-      
+
       # inst
       def inst_index( inst )
         object_index( inst , :inst )
@@ -135,7 +124,7 @@ module RubyAnalyzer
         raise if inst.to_s =~ /Class:/
         object_add( inst , :inst )
       end
-      
+
       def inst_at( index )
         object_at( index , :inst )
       end
@@ -216,7 +205,7 @@ module RubyAnalyzer
       def get_count_global
         get_count(:global)
       end
-      
+
       # for reflection
       def register_reflection( klass )
         register_base( klass , :reflection )
@@ -239,7 +228,7 @@ module RubyAnalyzer
       end
 
       def new_env_base( obj , kind )
-        @@klass_list[kind].each{|k_index|
+        @@klass_list[kind].each do |k_index|
           case kind
           when :ast
             obj_index = obj
@@ -249,7 +238,6 @@ module RubyAnalyzer
               pp "obj=#{obj}"
               raise
             end
-            #
           end
 
           unless obj_index
@@ -262,14 +250,14 @@ module RubyAnalyzer
           @@env[kind][k_index][obj_index] ||= {}
           klass = klass_at(k_index)
           klass.init( @@env[kind][k_index][obj_index] , kind )
-        }
+        end
       end
 
       def save( fname , kind = :root )
         @@db = PStore.new( fname )
         @@db.transaction do
           if kind == :root
-            @@db[ :root ] = @@env
+            @@db[:root] = @@env
           else
             @@db[kind] = @@env[kind]
           end
@@ -296,7 +284,7 @@ module RubyAnalyzer
       def set_env( obj )
         @@env = obj
       end
-      
+
       def load( fname , root = nil )
         obj = {}
         if FileTest.exist?( fname )
@@ -306,7 +294,7 @@ module RubyAnalyzer
               obj = pstore[:root]
             else
               pstore.roots.each do |root|
-                pstore[root].each do |k,v|
+                pstore[root].each do |k, v|
                   obj[k] = v
                 end
               end
@@ -332,6 +320,7 @@ module RubyAnalyzer
         end
         obj
       end
+
       #
       # for_ast
       #
@@ -349,14 +338,14 @@ module RubyAnalyzer
       end
 
       def show_for_ast
-        @@env[:ast].each do |k,v|
+        @@env[:ast].each do |k, v|
           p "# #{k}"
-          v[Contents].each do |k2,v2|
-            v2.each do |k3,v3|
+          v[Contents].each_value do |v2|
+            v2.each do |k3, v3|
               p "### #{k3} #{v3.size}"
-              v3.each do |k4,v4|
+              v3.each_value do |v4|
                 #                p "#### #{k4} #{v4.size}"
-                v4.each do |k5,v5|
+                v4.each do |k5, v5|
                   p "##### #{k5} #{v5.class}"
                 end
               end
@@ -368,7 +357,7 @@ module RubyAnalyzer
       def get_env_for_ast
         @@env[:ast]
       end
-      
+
       def save_for_ast( fname )
         save( fname, :ast )
       end
@@ -379,18 +368,15 @@ module RubyAnalyzer
 
       def load_for_ast( fname )
         yml = load( fname )
-        if yml.size > 0
-          @@env[:ast].merge( yml )
-        end
+        return if yml.empty?
+        @@env[:ast].merge( yml )
       end
 
       def load_for_ast_from_yaml( fname )
-        if FileTest.exist?( fname )
-          yml = load_from_yaml( fname )
-          if yml.size > 0
-            @@env.merge!( yml )
-          end
-        end
+        return unless FileTest.exist?( fname )
+        yml = load_from_yaml( fname )
+        return if yml.empty?
+        @@env.merge!( yml )
       end
     end
   end

@@ -203,6 +203,5 @@ module RubyAnalyzer
     class Zarray < Astitem; end
 
     class Zsuper_item < Astitem; end
-
-  end # class Ast
-end # RubyAnalyzer
+  end
+end

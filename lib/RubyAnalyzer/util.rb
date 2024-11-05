@@ -5,30 +5,28 @@ require 'RubyAnalyzer/raenv'
 
 module RubyAnalyzer
   class Util
-
     EnvStruct = Struct.new(:debug, :logger, :original_format)
     @cv = EnvStruct.new
     @cv.debug = false
-    @cv.logger = Logger.new(STDOUT)
-    #@cv.logger.level = Logger::INFO
+    @cv.logger = Logger.new($stdout)
+    # @cv.logger.level = Logger::INFO
     @cv.logger.level = Logger::WARN
-    #@cv.logger.level = Logger::DEBUG
-    #@cv.logger.level = Logger::ERROR
-    #@cv.logger.level = Logger::FATL
+    # @cv.logger.level = Logger::DEBUG
+    # @cv.logger.level = Logger::ERROR
+    # @cv.logger.level = Logger::FATL
     #
     @cv.original_format = Logger::Formatter.new
-    @cv.logger.formatter = proc do |severity, datetime, progname, msg|
+    @cv.logger.formatter = proc do |_severity, _datetime, _progname, msg|
       "#{msg}\n"
     end
 
     class << self
-
       def get_top_module_name( klass )
         module_name = nil
         array = klass.to_s.split('::')
         if array.size > 1
           const = Object.const_get( array[0] )
-          if const.class.to_s == "Module"
+          if const.instance_of?(::Module)
             module_name = array[0]
           end
         end
@@ -36,7 +34,7 @@ module RubyAnalyzer
       end
 
       def indent( level )
-        "#{' ' * level}"
+        (' ' * level).to_s
       end
 
       def debug_pp( obj )
@@ -74,7 +72,7 @@ module RubyAnalyzer
       end
 
       def remove_empty_line( list)
-        list.map{|x| x.chomp}.select{ |y| y !~ /^\s*$/ }
+        list.map(&:chomp).grep_v(/^\s*$/)
       end
 
       def sym_to_name(sym)
@@ -82,4 +80,4 @@ module RubyAnalyzer
       end
     end
   end
-end # module RubyAnalyzer
+end

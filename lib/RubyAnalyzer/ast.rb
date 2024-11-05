@@ -4,7 +4,7 @@ require 'RubyAnalyzer/astitem'
 module RubyAnalyzer
   class Ast
     RAEnv.register_for_ast( self )
-    St = Struct.new( :hier , :cur, :level , :count)
+    St = Struct.new(:hier , :cur, :level , :countx)
 
     @@global_count = 0
 
@@ -13,16 +13,12 @@ module RubyAnalyzer
         case kind
         when :ast
           @@env = env
-          #
           @@cv = St.new
           @@cv.hier = []
           @@cv.cur = nil
           @@cv.level = 1
-          @@cv.count = 1
-        else
-          #
+          @@cv.countx = 1
         end
-
       end
 
       def register( klass_index, inst_index )
@@ -31,9 +27,9 @@ module RubyAnalyzer
       end
 
       def get_count
-        count = @@cv.count
-        @@cv.count += 1
-        count
+        countx = @@cv.countx
+        @@cv.countx += 1
+        countx
       end
 
       def hier_push( value )
@@ -69,4 +65,4 @@ module RubyAnalyzer
       end
     end
   end
-end # module RubyAnalyzer
+end

@@ -7,22 +7,19 @@ module RubyAnalyzer
       kind = :reflection
       keys = RAEnv.get_object_hash_keys( kind )
       keys.each do |x|
-        obj = RAEnv.object_at(x, kind)
+        RAEnv.object_at(x, kind)
       end
 
-      env_for_ast = RAEnv.get_env_for_ast
-      
+      RAEnv.get_env_for_ast
     end
-    
+
     def show_item_list( hs )
-      hs.each do |fpath,v|
+      hs.each_value do |v|
         v.each do |x|
           if x.instance_of?( Array )
-            x.each do |y|
-              vgvar_name = y.inspect
-            end
+            x.each(&:inspect)
           else
-            vgvar_name = x.inspect
+            x.inspect
           end
         end
       end
@@ -30,10 +27,9 @@ module RubyAnalyzer
 
     def testx
       Util.debug( "# RubyAnalyzer::Analyzer.show_tree" )
-      #RubyAnalyzer::Analyzer.show_tree
+      # RubyAnalyzer::Analyzer.show_tree
       Item.show_tree
 
-      #
       Util.debug( "==" )
       x = Object.const_get( "CStructType" )
       Util.debug( x.class )
@@ -46,7 +42,6 @@ module RubyAnalyzer
       Util.debug( x.ancestors )
       Util.debug( CompositeCelltype )
       Util.debug( CompositeCelltype.ancestors )
-      #
       Util.debug( "===" )
       RubyAnalyzer::Item.sort_by_ancestor
       Util.debug( "=== sort_by_ns_key" )
