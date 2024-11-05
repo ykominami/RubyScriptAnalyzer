@@ -1,4 +1,3 @@
-# coding: utf-8
 require 'RubyAnalyzer/item'
 require 'RubyAnalyzer/itemroot'
 require 'RubyAnalyzer/raenv'
@@ -7,7 +6,6 @@ require 'RubyAnalyzer/util'
 
 module RubyAnalyzer
   class Analyzer
-
     RAEnv.register_reflection( self )
     St = Struct.new( "Analyzer" , :ns )
 
@@ -18,8 +16,6 @@ module RubyAnalyzer
           env['cv'] = St.new
           @@cv = env['cv']
           @@cv.ns = Ns.new
-        else
-          #
         end
       end
 
@@ -35,15 +31,13 @@ module RubyAnalyzer
       def pop_from_ns
         @@cv.ns.pop
       end
-
     end
 
     def initialize( yaml )
       @input_fnames = yaml["input_file"]
-      #
       @exclude_class_list = []
       yaml["exclude_class_file"].each do |fname|
-        File.readlines( fname ).map{|x| x.chomp}.select{ |y| y !~ /^\s*$/ }.each do |x|
+        File.readlines( fname ).map(&:chomp).grep_v(/^\s*$/).each do |x|
           @exclude_class_list << x
         end
       end
@@ -55,7 +49,7 @@ module RubyAnalyzer
       @init_lv = local_variables
 
       root = Itemroot.new( Object )
-#     check_exclude_klass
+      #     check_exclude_klass
 
       @input_fnames.each do |fname|
         require fname
@@ -78,19 +72,17 @@ module RubyAnalyzer
       # ユーザ定義クラスで定義されたメソッド、変数を差分として抽出し、設定
       Item.set_for_user_defined_class
 
-      #
       Item.sort_by_target_inst
       Item.show_all_class_related_info( :SELF )
     end
 
     def analyze0( level , parent_item , list )
       list.each do |x|
-        if parent_item.obj.respond_to?( :const_get )
-          const = parent_item.obj.const_get( x )
-          analyze_sub( level , parent_item, const )
-        else
-          # p "parent_item.obj=#{parent_item.obj}"
-        end
+        next unless parent_item.obj.respond_to?( :const_get )
+        const = parent_item.obj.const_get( x )
+        analyze_sub( level , parent_item, const )
+        # else
+        #  # p "parent_item.obj=#{parent_item.obj}"
       end
     end
 
@@ -98,25 +90,21 @@ module RubyAnalyzer
       case obj.class
       when Class
         class_name = obj.class.to_s
-        unless @exclude_class_list.include?( class_name )
-          if class_name =~ /^#<Class:/
-            parent_item.add_not_respond_to_ancesstors_constant( obj.to_s )
-          elsif obj.respond_to?(:ancestors)
-            Util.debug( "analyze1_sub == a" )
-            item = Item.new( obj , parent_item , level )
-            parent_item.add_ns_child( item )
-            Analyzer.push_to_ns( item )
-            analyze2( level + 1 , item )
-            Analyzer.pop_from_ns
-          else
-            Util.debug( "@not_respond_to_ancestors_constants=#{@not_respond_to_ancestors_constants}" )
-            parent_item.add_not_respond_to_ancesstors_constant( obj.to_s )
-          end
-        else
+        if @exclude_class_list.include?( class_name )
           parent_item.add_exclude_class_constant( obj.to_s )
+        elsif class_name =~ /^#<Class:/
+          parent_item.add_not_respond_to_ancesstors_constant( obj.to_s )
+        elsif obj.respond_to?(:ancestors)
+          Util.debug( "analyze1_sub == a" )
+          item = Item.new( obj , parent_item , level )
+          parent_item.add_ns_child( item )
+          Analyzer.push_to_ns( item )
+          analyze2( level + 1 , item )
+          Analyzer.pop_from_ns
+        else
+          Util.debug( "@not_respond_to_ancestors_constants=#{@not_respond_to_ancestors_constants}" )
+          parent_item.add_not_respond_to_ancesstors_constant( obj.to_s )
         end
-      else
-        #
       end
     end
 
@@ -127,7 +115,7 @@ module RubyAnalyzer
         skip = false
         begin
           const = item.const_get( x )
-        rescue => ex
+        rescue StandardError
           item.add_not_defined_constant( x.to_s )
           skip = true
         end
@@ -135,12 +123,9 @@ module RubyAnalyzer
       end
     end
 
-    def analyze2( level , item  )
-      if item.respond_to?( :constants )
-        analyze1(level , item, item.constants )
-      else
-        #
-      end
+    def analyze2( level , item )
+      return unless item.respond_to?( :constants )
+      analyze1(level , item, item.constants )
     end
   end
 end

@@ -10,14 +10,12 @@ module RubyAnalyzer
         case kind
         when :reflection
           @@env = env
-        else
-          #
         end
       end
 
       def add_env( inst )
         inst_index = RAEnv.inst_add( inst )
-        @@env[ inst_index ] = {}
+        @@env[inst_index] = {}
       end
     end
 
@@ -37,4 +35,4 @@ module RubyAnalyzer
       Util.debug_pp( @hs.keys )
     end
   end
-end # module RubyAnalyzer
+end

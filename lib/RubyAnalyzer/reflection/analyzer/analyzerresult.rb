@@ -24,7 +24,7 @@ module RubyAnalyzer
     end
 
     def self.create_AnalyzerResult
-      AnalyzerResult.new(*@names.map{|n| n[1]}) 
+      AnalyzerResult.new(*@names.map{|n| n[1]})
     end
-	end
+  end
 end

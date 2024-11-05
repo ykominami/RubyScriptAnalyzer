@@ -11,15 +11,13 @@ module RubyAnalyzer
         case kind
         when :reflection
           @@env = env
-        else
-          #
         end
       end
 
       def add_env( obj )
         inst_index = RAEnv.inst_add( obj )
-        @@env[ inst_index ] = {}
-        @@env[ inst_index ]['iv'] = St.new
+        @@env[inst_index] = {}
+        @@env[inst_index]['iv'] = St.new
       end
     end
 
@@ -32,10 +30,10 @@ module RubyAnalyzer
 
     def push( item )
       ns_name = item.name.split('::').pop
-      if @iv.stack.size > 0
-        item.ns_key = [@iv.stack.last.ns_key , ns_name].join('::')
-      else
+      if @iv.stack.empty?
         item.ns_key = ns_name
+      else
+        item.ns_key = [@iv.stack.last.ns_key , ns_name].join('::')
       end
       Util.debug( "=*=* #{@iv.stack.size} Ns item.ns_key=#{item.ns_key}" )
       @iv.stack << item
@@ -48,14 +46,14 @@ module RubyAnalyzer
     end
 
     def show
-      Util.debug_pp( @iv.stack.map{|x| x.ns_key } )
+      Util.debug_pp( @iv.stack.map(&:ns_key) )
     end
 
     def show_tree
     end
 
     def get_ns_key
-      @iv.stack.map{|x| x.name }.join('/')
+      @iv.stack.map(&:name).join('/')
     end
   end
 end

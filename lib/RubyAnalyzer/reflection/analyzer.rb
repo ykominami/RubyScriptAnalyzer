@@ -15,8 +15,8 @@ module RubyAnalyzer
 
     def initialize(output_filepath, analyzerfiles, fname , fname2 = nil)
       Util.level = Logger::WARN
-      #Util.level = Logger::DEBUG
-      #Util.level = Logger::FATAL
+      # Util.level = Logger::DEBUG
+      # Util.level = Logger::FATAL
       @output_filepath = output_filepath
       @files = analyzerfiles
       @init_consts = Module.constants
@@ -42,109 +42,99 @@ module RubyAnalyzer
 
       @output_yaml = [:class, :module, :instance,
                       :unknown_class, :unknown_module, :unknown_instance,
-                      :not_respond_to,
-                    ].reduce({}) {|h, k| h[k] = {}; h}
+                      :not_respond_to,].each_with_object({}) {|k, h| h[k] = {} }
       @item_adjust_result = [:class, :module, :instance,
                              :unknown_class, :unknown_module, :unknown_instance,
                              :not_respond_to,
-                             :exclude_class, :exclude_module, :exclude_instance, :exclude_const,
-                            ].reduce({}) {|h, k| h[k] = {}; h}
-      @not_item_adjust_result = [:exclude_class, :exclude_const, :exclude_module, :exclude_instance,
-                            ].reduce({}) {|h, k| h[k] = {}; h}
-#      @result = AnalyzerResult.new
+                             :exclude_class, :exclude_module, :exclude_instance, :exclude_const,].each_with_object({}) {|k, h| h[k] = {} }
+      @not_item_adjust_result = [:exclude_class, :exclude_const, :exclude_module, :exclude_instance,].each_with_object({}) {|k, h| h[k] = {} }
+      #      @result = AnalyzerResult.new
       @result = self.class.create_AnalyzerResult
     end
 
     def analyze
-#      Util.debug "called analyze"
+      #      Util.debug "called analyze"
       level = 0
-      object_item, standarderror_item = [
-        [Object, :Object], 
+      object_item, = [
+        [Object, :Object],
         [StandardError, :StandardError]
-      ].map{ |klass, name|
+      ].map do |klass, name|
         item = Item.new(name, klass, nil, level)
         item.set_adjust_type(name)
         item.set_adjust_result(name, 0)
         item
-      }
-      #
+      end
       analyze_child_items(object_item, @diff_const)
       #
-      #dump_analyze_result
+      # dump_analyze_result
       #
       adjust_items(object_item)
       #
-      #dump_adjust_items_result
+      # dump_adjust_items_result
       #
       prepare_yaml_dump(object_item)
-      #
       yaml_dump(@output_filepath)
     end
 
     def analyze_child_items(item, list, recursive = false)
       if item.respond_to?(:const_get)
-#        Util.debug_pp "analyze_child_items respond item.nme=#{item.name_sym} recursive=#{recursive}"
+        #        Util.debug_pp "analyze_child_items respond item.nme=#{item.name_sym} recursive=#{recursive}"
         list.each do |const_name|
           obj2 = item.ruby_obj.const_get(const_name)
           level2 = item.level + 1
           item2 = Item.new(const_name, obj2, item, level2)
-          #
-          const_name_str = Util.sym_to_name(const_name)
+          Util.sym_to_name(const_name)
           analyze_sub(item2, true)
         end
       else
-#        Util.debug_pp "analyze_child_items not_respond item.nme=#{item.name_sym}"
+        #        Util.debug_pp "analyze_child_items not_respond item.nme=#{item.name_sym}"
         @result.not_respond_to_list.add(item)
         @output_yaml[:not_respond_to][item.name_sym] = item.dump_in_hash
       end
     end
 
     def analyze_sub(item, recursive = false)
-#      Util.debug("analyze_sub A item.kind=#{item.kind} item.target?=#{item.target}")
+      #      Util.debug("analyze_sub A item.kind=#{item.kind} item.target?=#{item.target}")
       case item.kind
       when :class
         if @files.target_class_list.include?(item.name_sym)
           item.target_on
-#          Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
+          #          Util.debug("analyze_sub item.kind=#{item.kind} item.target?=#{item.target}")
           @result.class_list.add(item)
           item.set_adjust_type(:class)
           # @output_yaml[:class][item.name_sym] = item.dump_in_hash
-#          Util.debug "analyze_sub item.name_sym=#{item.name_sym} recursive=#{recursive}"
+          #          Util.debug "analyze_sub item.name_sym=#{item.name_sym} recursive=#{recursive}"
           analyze_child_items(item, item.ruby_obj.constants, recursive) if item.adjust_result_nil_or_0?
+        elsif @files.exclude_class_list.include?(item.name_sym)
+          @result.exclude_class_list.add(item)
+          @not_item_adjust_result[:exclude_class][item.name_sym] = { :item => item }
+          item.set_adjust_type(:exclude_class)
+        elsif @files.exclude_const_list.include?(item.name_sym)
+          @result.exclude_const_list.add(item)
+          @not_item_adjust_result[:exclude_const][item.name_sym] = { :item => item }
+          item.set_adjust_type(:exclude_const)
         else
-          if @files.exclude_class_list.include?(item.name_sym)
-            @result.exclude_class_list.add(item)
-            @not_item_adjust_result[:exclude_class][item.name_sym] = {:item => item}
-            item.set_adjust_type(:exclude_class)
-          elsif @files.exclude_const_list.include?(item.name_sym)
-            @result.exclude_const_list.add(item)
-            @not_item_adjust_result[:exclude_const][item.name_sym] = {:item => item}
-            item.set_adjust_type(:exclude_const)
-          else
-            @result.unknown_class_list.add(item)
-            item.set_adjust_type(:unknown_class)
-          end
+          @result.unknown_class_list.add(item)
+          item.set_adjust_type(:unknown_class)
         end
       when :module
         if @files.target_module_list.include?(item.name_sym)
           item.target_on
           @result.module_list.add(item)
           item.set_adjust_type(:module)
-          analyze_child_items(item, item.ruby_obj.constants, recursive)  if item.adjust_result_nil_or_0?
+          analyze_child_items(item, item.ruby_obj.constants, recursive) if item.adjust_result_nil_or_0?
+        elsif @files.exclude_module_list.include?(item.name_sym)
+          @result.exclude_module_list.add(item)
+          @not_item_adjust_result[:exclude_module][item.name_sym] = { :item => item }
+          item.set_adjust_type(:exclude_module)
         else
-          if @files.exclude_module_list.include?(item.name_sym)
-            @result.exclude_module_list.add(item)
-            @not_item_adjust_result[:exclude_module][item.name_sym] = {:item => item}
-            item.set_adjust_type(:exclude_module)
-          else
-            @result.unknown_module_list.add(item)
-            item.set_adjust_type(:unknown_module)
-          end
+          @result.unknown_module_list.add(item)
+          item.set_adjust_type(:unknown_module)
         end
       else
         if @files.exclude_instance_list.include?(item.name_sym)
           @result.exclude_instance_list.add(item)
-          @not_item_adjust_result[:exclude_instance][item.name_sym] = {:item => item}
+          @not_item_adjust_result[:exclude_instance][item.name_sym] = { :item => item }
           item.set_adjust_type(:exclude_instance)
         else
           item.target_on

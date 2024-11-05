@@ -21,7 +21,7 @@ module RubyAnalyzer
       end
 
       def inspect_env
-        @@env.each do |k,v|
+        @@env.each_value do |v|
           if v.class.respond_to?( :ancestors )
             puts "v.class.ancestors=#{v.class.ancestors}"
           else
@@ -32,13 +32,13 @@ module RubyAnalyzer
           case v.class
           when Hash
             puts "11 v.class=#{v.class}"
-            v.each do |k2,v2|
+            v.each do |k2, v2|
               puts "k2=#{k2} #{k2.class}"
               puts "v2=#{v2} #{v2.class}"
             end
           when ::Hash
             puts "12 v.class=#{v.class}"
-            v.each do |k2,v2|
+            v.each do |k2, v2|
               puts "k2=#{k2} #{k2.class}"
               puts "v2=#{v2} #{v2.class}"
             end
@@ -50,9 +50,9 @@ module RubyAnalyzer
       end
 
       def check_all( kind )
-        case @@env[ kind ].class
+        case @@env[kind].class
         when Hash
-          @@env[ kind ].each do |k,v|
+          @@env[kind].each do |k, v|
             puts "(check_all) #{kind} #{k} #{v.class}"
             case v.class
             when Hash
@@ -64,11 +64,10 @@ module RubyAnalyzer
               raise
             else
               pp "ELSE"
-              #
             end
           end
         when Array
-          @@env[ kind ].each do |x|
+          @@env[kind].each do |x|
             puts "(check_all) #{kind} #{x.class}"
             case x.class
             when Hash
@@ -80,7 +79,6 @@ module RubyAnalyzer
               raise
             else
               pp "ELSE"
-              #
             end
           end
         else
@@ -89,18 +87,18 @@ module RubyAnalyzer
       end
 
       def check_all_class
-        @@env[ :class ].each do |x|
-          puts "#{x}|#{x.to_s}"
+        @@env[:class].each do |x|
+          puts "#{x}|#{x}"
           raise if x.to_s =~ /Class:/
         end
       end
 
       def check_all_inst
-        @@env[ :inst ].each do |x|
-          puts "#{x}|#{x.to_s}|#{x.class}"
+        @@env[:inst].each do |x|
+          puts "#{x}|#{x}|#{x.class}"
           raise if x.class.to_s =~ /Class:/
         end
       end
     end
-  end # RAEnv
-end # module RubyAnalyzer
+  end
+end

@@ -1,13 +1,13 @@
 require 'RubyAnalyzer/util'
-#require 'minitest/test'
-#require 'minitest/unit'
-#require 'minitest/autorun'
+# require 'minitest/test'
+# require 'minitest/unit'
+# require 'minitest/autorun'
 
 module RubyAnalyzer
   class Rubysource
-#    attr_accessor :assertions
+    #    attr_accessor :assertions
 
-#    include Minitest::Assertions
+    #    include Minitest::Assertions
 
     def initialize( opts )
       self.assertions = 0
@@ -16,32 +16,31 @@ module RubyAnalyzer
         ofname = opts[:output_file]
         @output = File.open( ofname , 'w' )
       else
-        @output = STDOUT
+        @output = $stdout
       end
 
       @data_hash = {}
-      
+
       fpath = opts[:idlist_file]
       array = File.readlines( fpath ).map{ |x| x.chomp.split("\t") }
-      idents = array.reduce({}){|s, x|
+      idents = array.each_with_object({}) do |x, s|
         ident = x[0]
         if x.size > 1
-          klass_name = x[1] 
+          klass_name = x[1]
         else
           klass_name = x[0].capitalize
         end
         s[ident] = klass_name
-        s
-      }
+      end
 
       @ident_fpath = opts[:ident_file]
       @ident = File.basename( @ident_fpath , ".*" )
 
       make_ident_class_name_list( idents , @ident_fpath )
-      
+
       keys = idents.keys
-      id_list = keys.dup
-      
+      keys.dup
+
       idents.each do |ident, klass_name|
         @data_hash[ident] = {}
         v = @data_hash[ident]
@@ -72,51 +71,51 @@ module RubyAnalyzer
       module_name = get_module_name
       var_name = "IDENT_CLASS_NAME"
       ast_class_name = "Ast"
-      line =<<EOL
-module #{module_name}
-  #{var_name} = {
-EOL
+      line = <<~MODULE_HEAD
+        module #{module_name}
+          #{var_name} = {
+      MODULE_HEAD
+
       lines << line
-      
-      idents.each do |k,v|
+
+      idents.each do |k, v|
         line = "    '#{k}' => '#{module_name}::#{ast_class_name}::#{v}',"
         lines << line
       end
-      line = <<EOL
-}
-end
-EOL
+      line = <<~MODULE_TAIL
+        }
+        end
+      MODULE_TAIL
       lines << line
-      
-      File.open( outfname , 'w' ){|f|
+
+      File.open( outfname , 'w' ) do |f|
         f.puts( lines.join("\n") )
-      }
+      end
     end
-    
+
     def make_source
       make_klassoutput_lines
       add_child_to_klassoutput_lines
     end
 
     def make_klassoutput_lines
-      @data_hash.each do |k,v|
-        accessors = []
+      @data_hash.each do |k, v|
         ident = k
         klass = v["class"]
         child_info = v["child"]
-        #refute_nil( child_info )
-        
+        # refute_nil( child_info )
+
         ko = Klassoutput.new( ident, klass , child_info)
-        @klass_output_lines[ k ] = ko
+        @klass_output_lines[k] = ko
       end
     end
 
     def add_child_to_klassoutput_lines
       keys = @klass_output_lines.keys
-      keys.map{|k|
-        ko = @klass_output_lines[ k ]
+      keys.map do |k|
+        ko = @klass_output_lines[k]
         ko.add_child( @klass_output_lines )
-      }
+      end
     end
 
     def get_module_name
@@ -128,30 +127,30 @@ EOL
       end
       module_name
     end
-    
+
     def output_source
       module_name = get_module_name
       @output.puts("require '#{@ident}'")
       @output.puts("")
       @output.puts("module #{module_name}")
       @output.puts("  class Ast")
-      
+
       keys = @klass_output_lines.keys
-      keys.map{|k|
+      keys.map do |k|
         x = @klass_output_lines[k]
         @output.puts( x.get_output )
         @output.puts( "" )
-      }
+      end
       @output.puts("  end # class Ast")
       @output.puts("end # #{module_name}")
     end
-    
+
     def make_node_hash( fname )
-      idlist = File.readlines(fname).map{|x| x.chomp }
+      idlist = File.readlines(fname).map(&:chomp)
       hs = {}
       idlist.each do |ident|
-        hs[ ident ] = {}
+        hs[ident] = {}
       end
     end
   end
-end # module RubyAnalyzer
+end

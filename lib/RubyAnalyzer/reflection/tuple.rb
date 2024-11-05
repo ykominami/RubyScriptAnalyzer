@@ -1,22 +1,22 @@
 class Tuple
-	def initialize(left, right)
-		@left = left
-		@right = right
-	end
+  def initialize(left, right)
+    @left = left
+    @right = right
+  end
 
-	def l
-		@left
-	end
+  def l
+    @left
+  end
 
-	def r
-		@right
-	end
+  def r
+    @right
+  end
 
-	def to_s
-		%Q!#{@left} #{@right}!
-	end
+  def to_s
+    %Q(#{@left} #{@right})
+  end
 
-	def name
-		@right.name
-	end
+  def name
+    @right.name
+  end
 end
