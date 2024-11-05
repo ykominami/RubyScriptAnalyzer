@@ -169,9 +169,9 @@ module RubyAnalyzer
       @name <=> other.name
     end
 
-		def adjust(&)
-			@iteminfo.adjust(&)
-		end
+    def adjust(&)
+      @iteminfo.adjust(&)
+    end
   end
 
   class Itemobj < Item
