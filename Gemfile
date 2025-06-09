@@ -7,7 +7,7 @@ gem "aruba"
 gem "bundler"
 gem "rake", ">= 12.3.3"
 
-gem "psych", "5.2.3"
+gem "psych", "5.2.6"
 
 group :test, optional: true do
   gem "rspec", "~> 3.0"
