@@ -10,7 +10,7 @@ gem "rake", ">= 12.3.3"
 gem "psych", "5.2.6"
 
 group :test, optional: true do
-  gem "rspec", "~> 3.0"
+  gem "rspec", "~> 3.13"
   gem "rubocop"
   gem "rubocop-performance"
   gem "rubocop-rake"
