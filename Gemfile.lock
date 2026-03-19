@@ -48,7 +48,7 @@ GEM
     ffi (1.17.2)
     ffi (1.17.2-x86_64-linux-gnu)
     io-console (0.8.2)
-    json (2.18.1)
+    json (2.19.2)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
