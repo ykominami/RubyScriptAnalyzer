@@ -7,7 +7,7 @@ gem "aruba"
 gem "bundler"
 gem "rake", ">= 12.3.3"
 
-gem "psych", "5.3.1"
+gem "psych", "5.4.0"
 
 group :test, optional: true do
   gem "rspec", "~> 3.13"
@@ -25,7 +25,7 @@ group :test, optional: true do
 end
 
 group :development do
-  gem 'yard', "~> 0.9.43"
+  gem 'yard', "~> 0.9.44"
 end
 
 gem "rb-readline"
