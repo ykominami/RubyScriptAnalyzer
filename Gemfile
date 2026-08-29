@@ -25,7 +25,7 @@ group :test, optional: true do
 end
 
 group :development do
-  gem 'yard', "~> 0.9.44"
+  gem 'yard', "~> 0.9.45"
 end
 
 gem "rb-readline"
